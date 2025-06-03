@@ -1,0 +1,7 @@
+tmdb:
+  auth:
+    api-key:
+    access-token:
+  api:
+    moive-lists:
+      now-playing: https://api.themoviedb.org/3/movie/now_playing

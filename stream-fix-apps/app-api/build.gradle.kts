@@ -1,7 +1,7 @@
 dependencies {
     implementation(project(":stream-fix-core:core-usecase"))
-    runtimeOnly(project(":stream-fix-core:core-service"))
-    runtimeOnly(project(":stream-fix-adapters:adapter-http"))
+    implementation(project(":stream-fix-core:core-service"))
+    implementation(project(":stream-fix-adapters:adapter-http"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
