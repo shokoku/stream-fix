@@ -14,7 +14,7 @@ public class SampleCustomRepositoryImpl implements SampleCustomRepository {
   private final JPAQueryFactory jpqQueryFactory;
 
   @Override
-  public List<SampleEntity> findAll() {
+  public List<SampleEntity> findAllByQuery() {
 
     return jpqQueryFactory.selectFrom(QSampleEntity.sampleEntity)
         .fetch();
