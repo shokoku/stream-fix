@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mysql://localhost:3306/streamfix
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: admin
+    jpa:
+      properties:
+        hibernate:
+          format_sql: true
+      hibernate:
+        ddl-auto: validate
+      generate-ddl: false
+      open-in-view: false
+      show-sql: true
