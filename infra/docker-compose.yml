@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: stream-fix-mysql
+    restart: always
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      TZ: Asia/Seoul
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+      - ./db/mysql/init:/docker-entrypoint-initdb.d
+
+  redis:
+    container_name: stream-fix-redis
+    hostname: redis
+    image: redis:alpine
+    ports:
+      - '6379:6379'
+    command: redis-server
+    restart: always
