@@ -3,6 +3,7 @@ dependencies {
     implementation(project(":stream-fix-core:core-service"))
     implementation(project(":stream-fix-adapters:adapter-http"))
     implementation(project(":stream-fix-adapters:adapter-persistence"))
+    implementation(project(":stream-fix-adapters:adapter-redis"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")

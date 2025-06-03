@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RequestByAuditAware implements AuditorAware<String> {
-
+public class RequestedByAuditorAware implements AuditorAware<String> {
   private final ApplicationContext context;
 
   @Override
