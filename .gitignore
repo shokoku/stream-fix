@@ -46,3 +46,5 @@ bin/
 infra/db/
 
 /stream-fix-adapters/adapter-http/src/main/resources/adapter-http-property.yml
+
+.jqwik-database
