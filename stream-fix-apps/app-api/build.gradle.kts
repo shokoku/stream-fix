@@ -1,0 +1,24 @@
+dependencies {
+    implementation(project(":stream-fix-core:core-usecase"))
+
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.data:spring-data-commons")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.flywaydb:flyway-core")
+
+    integrationImplementation("org.springframework.boot:spring-boot-starter-test")
+    integrationImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
+    integrationImplementation("io.rest-assured:spring-mock-mvc")
+    integrationRuntimeOnly("com.h2database:h2")
+
+    integrationImplementation("com.epages:restdocs-api-spec-mockmvc")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+val appMainClassName = "com.shokoku.streamfix.StreamFixApplication"
+tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    mainClass.set(appMainClassName)
+    archiveClassifier.set("boot")
+}
