@@ -1,15 +1,5 @@
 package com.shokoku.streamfix.controller.movie;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.is;
-
 import com.shokoku.streamfix.StreamFixApplication;
 import com.shokoku.streamfix.authcation.AuthenticationHolder;
 import com.shokoku.streamfix.authcation.RequestedBy;
@@ -18,7 +8,6 @@ import com.shokoku.streamfix.interceptor.RequestedByInterceptor;
 import com.shokoku.streamfix.movie.FetchMovieUseCase;
 import com.shokoku.streamfix.movie.response.MovieResponse;
 import com.shokoku.streamfix.movie.response.PageableMovieResponse;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,27 +24,35 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @WebMvcTest(MovieController.class)
 @ContextConfiguration(classes = {StreamFixApplication.class, RequestedByMvcConfigurer.class})
 @Import(RequestedByInterceptor.class)
 @DisplayName("MovieController API 테스트")
 class MovieControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @MockBean
-  private FetchMovieUseCase fetchMovieUseCase;
+  @MockBean private FetchMovieUseCase fetchMovieUseCase;
 
-  @MockBean
-  private AuthenticationHolder authenticationHolder;
+  @MockBean private AuthenticationHolder authenticationHolder;
 
   private final String TEST_USER = "test-movie-user";
   private final String EXPECTED_SUCCESS_STRING = "Fetched from client page";
 
   @BeforeEach
   void setUp() {
-    given(authenticationHolder.getAuthentication()).willReturn(Optional.of(new RequestedBy(TEST_USER)));
+    given(authenticationHolder.getAuthentication())
+        .willReturn(Optional.of(new RequestedBy(TEST_USER)));
   }
 
   @Nested
@@ -73,19 +70,25 @@ class MovieControllerTest {
         int page = 1;
         // MovieResponse 및 PageableMovieResponse는 UseCase가 반환하지만, 컨트롤러는 이를 사용하지 않음
         // 그래도 UseCase Mock 설정은 필요
-        MovieResponse movie = new MovieResponse("Test Movie", false, Collections.singletonList("Action"), "Overview", "2024-01-01");
-        PageableMovieResponse dummyResponseFromUseCase = new PageableMovieResponse(Collections.singletonList(movie), page, false);
+        MovieResponse movie =
+            new MovieResponse(
+                "Test Movie", false, Collections.singletonList("Action"), "Overview", "2024-01-01");
+        PageableMovieResponse dummyResponseFromUseCase =
+            new PageableMovieResponse(Collections.singletonList(movie), page, false);
         given(fetchMovieUseCase.fetchFromClient(page)).willReturn(dummyResponseFromUseCase);
-        given(authenticationHolder.getAuthentication()).willReturn(Optional.of(new RequestedBy(TEST_USER)));
-
+        given(authenticationHolder.getAuthentication())
+            .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/movie/client/{page}", page)
-            .contentType(MediaType.APPLICATION_JSON) // 요청의 Content-Type, 응답은 text/plain 일 것
-            .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
+        ResultActions resultActions =
+            mockMvc.perform(
+                get("/api/v1/movie/client/{page}", page)
+                    .contentType(MediaType.APPLICATION_JSON) // 요청의 Content-Type, 응답은 text/plain 일 것
+                    .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
 
         // then
-        resultActions.andExpect(status().isOk())
+        resultActions
+            .andExpect(status().isOk())
             .andExpect(content().string(EXPECTED_SUCCESS_STRING)) // 실제 컨트롤러 반환값 검증
             .andDo(print());
 
@@ -105,18 +108,22 @@ class MovieControllerTest {
         int invalidPage = -1;
         given(fetchMovieUseCase.fetchFromClient(invalidPage))
             .willThrow(new IllegalArgumentException("Page must be greater than 0"));
-        given(authenticationHolder.getAuthentication()).willReturn(Optional.of(new RequestedBy(TEST_USER)));
+        given(authenticationHolder.getAuthentication())
+            .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/movie/client/{page}", invalidPage)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
+        ResultActions resultActions =
+            mockMvc.perform(
+                get("/api/v1/movie/client/{page}", invalidPage)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
 
         // then
-        resultActions.andExpect(status().isBadRequest())
+        resultActions
+            .andExpect(status().isBadRequest())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status", is(400)))
-             .andExpect(jsonPath("$.message", is("Page must be greater than 0")))
+            .andExpect(jsonPath("$.message", is("Page must be greater than 0")))
             .andDo(print());
 
         // verify
@@ -134,20 +141,24 @@ class MovieControllerTest {
         // given
         int page = 1;
         String errorMessage = "Movie UseCase failed unexpectedly";
-        given(fetchMovieUseCase.fetchFromClient(page)).willThrow(new RuntimeException(errorMessage));
-        given(authenticationHolder.getAuthentication()).willReturn(Optional.of(new RequestedBy(TEST_USER)));
-
+        given(fetchMovieUseCase.fetchFromClient(page))
+            .willThrow(new RuntimeException(errorMessage));
+        given(authenticationHolder.getAuthentication())
+            .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/movie/client/{page}", page)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
+        ResultActions resultActions =
+            mockMvc.perform(
+                get("/api/v1/movie/client/{page}", page)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
 
         // then
-        resultActions.andExpect(status().isInternalServerError())
+        resultActions
+            .andExpect(status().isInternalServerError())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status", is(500)))
-             .andExpect(jsonPath("$.message", is(errorMessage)))
+            .andExpect(jsonPath("$.message", is(errorMessage)))
             .andDo(print());
 
         // verify

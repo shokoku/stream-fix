@@ -1,16 +1,5 @@
 package com.shokoku.streamfix.sample;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.hamcrest.Matchers.is;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shokoku.streamfix.StreamFixApplication;
 import com.shokoku.streamfix.authcation.AuthenticationHolder;
 import com.shokoku.streamfix.authcation.RequestedBy;
@@ -31,18 +20,25 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @WebMvcTest(SampleController.class)
 @ContextConfiguration(classes = {StreamFixApplication.class, RequestedByMvcConfigurer.class})
 @Import(RequestedByInterceptor.class)
 @DisplayName("SampleController API 테스트")
 class SampleControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-  @MockBean
-  private SearchSampleUseCase searchSampleUseCase;
-
+  @MockBean private SearchSampleUseCase searchSampleUseCase;
 
   @MockBean // 인터셉터 의존성 Mock 처리
   private AuthenticationHolder authenticationHolder;
@@ -54,7 +50,8 @@ class SampleControllerTest {
   void setUp() {
     // 모든 테스트 전에 공통적으로 AuthenticationHolder Mock 설정
     // 각 테스트에서 필요에 따라 override 가능
-    given(authenticationHolder.getAuthentication()).willReturn(Optional.of(new RequestedBy(TEST_USER)));
+    given(authenticationHolder.getAuthentication())
+        .willReturn(Optional.of(new RequestedBy(TEST_USER)));
   }
 
   @Nested
@@ -72,16 +69,19 @@ class SampleControllerTest {
         String expectedName = "Test Sample";
         SampleResponse mockResponse = new SampleResponse(expectedName);
         given(searchSampleUseCase.getSample()).willReturn(mockResponse);
-        given(authenticationHolder.getAuthentication()).willReturn(Optional.of(new RequestedBy(TEST_USER)));
-
+        given(authenticationHolder.getAuthentication())
+            .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/sample")
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
+        ResultActions resultActions =
+            mockMvc.perform(
+                get("/api/v1/sample")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
 
         // then
-        resultActions.andExpect(status().isOk())
+        resultActions
+            .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.name", is(expectedName)))
             .andDo(print()); // 요청/응답 상세 로깅
@@ -101,15 +101,16 @@ class SampleControllerTest {
         SampleResponse mockResponse = new SampleResponse(DEFAULT_SAMPLE_NAME);
         given(searchSampleUseCase.getSample()).willReturn(mockResponse);
         // 헤더가 없을 때 인터셉터가 RequestedBy(null)을 반환하도록 AuthenticationHolder Mock 설정
-        given(authenticationHolder.getAuthentication()).willReturn(Optional.of(new RequestedBy(null)));
-
+        given(authenticationHolder.getAuthentication())
+            .willReturn(Optional.of(new RequestedBy(null)));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/sample")
-            .contentType(MediaType.APPLICATION_JSON));
+        ResultActions resultActions =
+            mockMvc.perform(get("/api/v1/sample").contentType(MediaType.APPLICATION_JSON));
 
         // then
-        resultActions.andExpect(status().isOk())
+        resultActions
+            .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.name", is(DEFAULT_SAMPLE_NAME)))
             .andDo(print());
@@ -118,7 +119,6 @@ class SampleControllerTest {
         verify(searchSampleUseCase, times(1)).getSample();
       }
     }
-
 
     @Nested
     @DisplayName("UseCase에서 예외 발생 시")
@@ -130,20 +130,23 @@ class SampleControllerTest {
         // given
         String errorMessage = "UseCase failed unexpectedly";
         given(searchSampleUseCase.getSample()).willThrow(new RuntimeException(errorMessage));
-        given(authenticationHolder.getAuthentication()).willReturn(Optional.of(new RequestedBy(TEST_USER)));
-
+        given(authenticationHolder.getAuthentication())
+            .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
         // when
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/sample")
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
+        ResultActions resultActions =
+            mockMvc.perform(
+                get("/api/v1/sample")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
 
         // then
-        resultActions.andExpect(status().isInternalServerError())
+        resultActions
+            .andExpect(status().isInternalServerError())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.status", is(500)))
             .andExpect(jsonPath("$.error", is("Internal Server Error")))
-             .andExpect(jsonPath("$.message", is(errorMessage)))
+            .andExpect(jsonPath("$.message", is(errorMessage)))
             .andExpect(jsonPath("$.path", is("/api/v1/sample")))
             .andDo(print());
 

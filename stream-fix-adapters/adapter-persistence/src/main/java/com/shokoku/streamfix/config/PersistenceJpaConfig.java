@@ -15,13 +15,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackageClasses = RepositoryModule.class)
 public class PersistenceJpaConfig {
 
-  @PersistenceContext
-  public EntityManager entityManager;
+  @PersistenceContext public EntityManager entityManager;
 
   @Bean
   public JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
     return new JPAQueryFactory(entityManager);
   }
-
-
 }

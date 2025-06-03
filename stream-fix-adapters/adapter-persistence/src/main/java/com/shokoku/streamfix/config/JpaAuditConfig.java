@@ -5,9 +5,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing(
     auditorAwareRef = "requestedByAuditorAware",
-    dateTimeProviderRef = "requestedAtAuditorAware"
-)
+    dateTimeProviderRef = "requestedAtAuditorAware")
 @Configuration
-public class JpaAuditConfig {
-
-}
+public class JpaAuditConfig {}

@@ -14,5 +14,4 @@ public class SampleController {
   public SampleResponse getSample() {
     return searchSampleUseCase.getSample();
   }
-
 }

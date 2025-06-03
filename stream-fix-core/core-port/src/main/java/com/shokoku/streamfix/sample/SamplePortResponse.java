@@ -1,5 +1,3 @@
 package com.shokoku.streamfix.sample;
 
-public record SamplePortResponse(String name) {
-
-}
+public record SamplePortResponse(String name) {}

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SampleService implements SearchSampleUseCase{
+public class SampleService implements SearchSampleUseCase {
 
   private final SamplePort samplePort;
   private final SamplePersistencePort samplePersistencePort;

@@ -24,12 +24,8 @@ public class RequestedByInterceptor implements WebRequestInterceptor {
   }
 
   @Override
-  public void postHandle(WebRequest request, ModelMap model) throws Exception {
-
-  }
+  public void postHandle(WebRequest request, ModelMap model) throws Exception {}
 
   @Override
-  public void afterCompletion(WebRequest request, Exception ex) throws Exception {
-
-  }
+  public void afterCompletion(WebRequest request, Exception ex) throws Exception {}
 }

@@ -18,5 +18,4 @@ public class MovieController {
     PageableMovieResponse pageableMovieResponse = fetchMovieUseCase.fetchFromClient(page);
     return "Fetched from client page";
   }
-
 }

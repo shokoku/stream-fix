@@ -1,5 +1,3 @@
 package com.shokoku.streamfix.entity;
 
-public interface EntityModule {
-
-}
+public interface EntityModule {}

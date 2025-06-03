@@ -1,5 +1,3 @@
 package com.shokoku.streamfix;
 
-public interface DomainModule {
-
-}
+public interface DomainModule {}

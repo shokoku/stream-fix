@@ -1,7 +1,8 @@
 package com.shokoku.streamfix.authcation;
 
-import java.util.Optional;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class AuthenticationHolderImpl implements AuthenticationHolder, RequestByProvider {
@@ -20,7 +21,6 @@ public class AuthenticationHolderImpl implements AuthenticationHolder, RequestBy
 
   @Override
   public Optional<String> getRequestedBy() {
-    return getAuthentication()
-        .map(Authentication::getRequestBy);
+    return getAuthentication().map(Authentication::getRequestBy);
   }
 }

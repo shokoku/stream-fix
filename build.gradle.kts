@@ -10,6 +10,7 @@ plugins {
     id("com.epages.restdocs-api-spec") version Versions.restdocsApiSpec apply false
     id("org.asciidoctor.jvm.convert") version Versions.asciidoctorPlugin apply false
     id("com.linecorp.build-recipe-plugin") version Versions.lineRecipePlugin
+    id("com.diffplug.spotless") version "7.0.4"
 
     kotlin("jvm") version Versions.kotlin apply false
     kotlin("kapt") version Versions.kotlin apply false
@@ -28,6 +29,7 @@ allprojects {
     }
 }
 
+
 subprojects {
     apply(plugin = "idea")
 }
@@ -42,6 +44,7 @@ configureByLabels("java") {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "io.freefair.lombok")
     apply(plugin = "com.coditory.integration-test")
+    apply(plugin = "com.diffplug.spotless")
 
     configure<JavaPluginExtension> {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -50,6 +53,23 @@ configureByLabels("java") {
 
     tasks.withType<Test> {
         useJUnitPlatform()
+    }
+
+    spotless {
+        java {
+            googleJavaFormat()
+            importOrder("", "javax", "java", "\\#")
+            removeUnusedImports()
+            targetExclude(
+                "build/**/*.java",
+                "**/build/**/*.java",
+                "generated/**/*.java",
+                "**/generated/**/*.java",
+                "**/gradle/wrapper/*",
+                "**/buildSrc/build/**",
+                "**/stream-fix-frontend/**"
+            )
+        }
     }
 
 

@@ -1,5 +1,3 @@
 package com.shokoku.streamfix;
 
-public interface PersistenceModule {
-
-}
+public interface PersistenceModule {}

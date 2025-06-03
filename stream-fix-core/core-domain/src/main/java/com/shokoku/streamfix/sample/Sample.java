@@ -1,5 +1,3 @@
 package com.shokoku.streamfix.sample;
 
-public record Sample(String name) {
-
-}
+public record Sample(String name) {}

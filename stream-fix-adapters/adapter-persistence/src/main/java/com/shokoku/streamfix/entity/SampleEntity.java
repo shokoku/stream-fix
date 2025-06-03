@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class SampleEntity {
 
   @Id
-  @Column(name="SAMPLE_ID")
+  @Column(name = "SAMPLE_ID")
   private String sampleId;
 
   @Column(name = "SAMPLE_NAME")
@@ -23,5 +23,4 @@ public class SampleEntity {
 
   @Column(name = "SAMPLE_DESC")
   private String sampleDescription;
-
 }

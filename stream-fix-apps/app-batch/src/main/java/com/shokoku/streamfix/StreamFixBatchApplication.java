@@ -1,5 +1,3 @@
 package com.shokoku.streamfix;
 
-public class StreamFixBatchApplication {
-
-}
+public class StreamFixBatchApplication {}
