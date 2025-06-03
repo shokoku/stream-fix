@@ -4,5 +4,6 @@ dependencies{
     runtimeOnly(project(":stream-fix-adapters:adapter-http"))
     runtimeOnly(project(":stream-fix-adapters:adapter-persistence"))
     implementation("org.springframework.data:spring-data-commons")
+    implementation("org.springframework:spring-context")
 
 }
