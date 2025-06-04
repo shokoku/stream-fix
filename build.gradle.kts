@@ -129,6 +129,7 @@ configureByLabels("java") {
         testImplementation("org.mockito:mockito-core")
         testImplementation("org.mockito:mockito-junit-jupiter")
         testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter")
+        testImplementation("org.springframework.security:spring-security-test")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 
         integrationImplementation("org.junit.jupiter:junit-jupiter-api")

@@ -1,6 +1,7 @@
 dependencies {
     implementation(project(":stream-fix-core:core-usecase"))
     implementation(project(":stream-fix-core:core-service"))
+    implementation(project(":stream-fix-commons"))
     implementation(project(":stream-fix-adapters:adapter-http"))
     implementation(project(":stream-fix-adapters:adapter-persistence"))
     implementation(project(":stream-fix-adapters:adapter-redis"))

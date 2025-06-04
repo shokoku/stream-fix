@@ -1,5 +1,6 @@
 package com.shokoku.streamfix.user;
 
+import com.shokoku.streamfix.exception.UserException.UserDoesNotExistException;
 import com.shokoku.streamfix.user.command.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class UserService implements FetchUserUseCase {
   public UserResponse fetchUserByEmail(String email) {
     Optional<UserPortResponse> byEmail = fetchUserPort.findByEmail(email);
     if (byEmail.isPresent()) {
-      throw new RuntimeException();
+      throw new UserDoesNotExistException();
     }
 
     UserPortResponse userPortResponse = byEmail.get();

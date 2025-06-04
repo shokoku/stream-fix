@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -34,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {StreamFixApplication.class, RequestedByMvcConfigurer.class})
 @Import(RequestedByInterceptor.class)
 @DisplayName("SampleController API 테스트")
+@WithMockUser
 class SampleControllerTest {
 
   @Autowired private MockMvc mockMvc;
@@ -63,7 +65,7 @@ class SampleControllerTest {
     class ContextWithValidRequest {
 
       @Test
-      @DisplayName("성공(200 OK) 상태 코드와 샘플 응답을 반환한다")
+      @DisplayName("성공(200 OK) 상태 코드와 StreamFixApiResponse 형태로 응답을 반환한다")
       void it_returns_200_ok_and_sample_response() throws Exception {
         // given
         String expectedName = "Test Sample";
@@ -83,7 +85,8 @@ class SampleControllerTest {
         resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.name", is(expectedName)))
+            .andExpect(jsonPath("$.success", is(true)))
+            .andExpect(jsonPath("$.data.name", is(expectedName)))
             .andDo(print()); // 요청/응답 상세 로깅
 
         // verify
@@ -95,7 +98,7 @@ class SampleControllerTest {
     @DisplayName("Request-By 헤더가 없는 요청 시")
     class ContextWithMissingRequestByHeader {
       @Test
-      @DisplayName("인터셉터의 기본값으로 처리되어 성공(200 OK)하고 기본 샘플 응답을 반환할 수 있다")
+      @DisplayName("인터셉터의 기본값으로 처리되어 성공(200 OK)하고 StreamFixApiResponse로 응답을 반환한다")
       void it_handles_with_interceptor_default_and_returns_200_ok() throws Exception {
         // given
         SampleResponse mockResponse = new SampleResponse(DEFAULT_SAMPLE_NAME);
@@ -112,7 +115,8 @@ class SampleControllerTest {
         resultActions
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.name", is(DEFAULT_SAMPLE_NAME)))
+            .andExpect(jsonPath("$.success", is(true)))
+            .andExpect(jsonPath("$.data.name", is(DEFAULT_SAMPLE_NAME)))
             .andDo(print());
 
         // verify
@@ -125,7 +129,7 @@ class SampleControllerTest {
     class ContextWithUseCaseException {
 
       @Test
-      @DisplayName("실패(500 Internal Server Error) 상태 코드와 에러 정보를 반환한다")
+      @DisplayName("실패 시 StreamFixApiResponse 실패 응답을 반환한다")
       void it_returns_500_internal_server_error() throws Exception {
         // given
         String errorMessage = "UseCase failed unexpectedly";
@@ -142,12 +146,10 @@ class SampleControllerTest {
 
         // then
         resultActions
-            .andExpect(status().isInternalServerError())
+            .andExpect(status().isOk()) // GlobalExceptionAdvice는 200으로 응답
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.status", is(500)))
-            .andExpect(jsonPath("$.error", is("Internal Server Error")))
+            .andExpect(jsonPath("$.success", is(false)))
             .andExpect(jsonPath("$.message", is(errorMessage)))
-            .andExpect(jsonPath("$.path", is("/api/v1/sample")))
             .andDo(print());
 
         // verify

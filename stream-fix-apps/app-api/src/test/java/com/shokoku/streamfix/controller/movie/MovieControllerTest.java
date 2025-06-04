@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -38,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {StreamFixApplication.class, RequestedByMvcConfigurer.class})
 @Import(RequestedByInterceptor.class)
 @DisplayName("MovieController API 테스트")
+@WithMockUser
 class MovieControllerTest {
 
   @Autowired private MockMvc mockMvc;
@@ -47,7 +49,6 @@ class MovieControllerTest {
   @MockBean private AuthenticationHolder authenticationHolder;
 
   private final String TEST_USER = "test-movie-user";
-  private final String EXPECTED_SUCCESS_STRING = "Fetched from client page";
 
   @BeforeEach
   void setUp() {
@@ -64,18 +65,16 @@ class MovieControllerTest {
     class ContextWithValidPage {
 
       @Test
-      @DisplayName("성공(200 OK) 상태 코드와 고정된 문자열을 반환하고, UseCase를 호출한다")
-      void it_returns_200_ok_and_fixed_string() throws Exception {
+      @DisplayName("성공(200 OK) 상태 코드와 StreamFixApiResponse 형태로 응답을 반환한다")
+      void it_returns_200_ok_and_api_response() throws Exception {
         // given
         int page = 1;
-        // MovieResponse 및 PageableMovieResponse는 UseCase가 반환하지만, 컨트롤러는 이를 사용하지 않음
-        // 그래도 UseCase Mock 설정은 필요
         MovieResponse movie =
             new MovieResponse(
                 "Test Movie", false, Collections.singletonList("Action"), "Overview", "2024-01-01");
-        PageableMovieResponse dummyResponseFromUseCase =
+        PageableMovieResponse responseFromUseCase =
             new PageableMovieResponse(Collections.singletonList(movie), page, false);
-        given(fetchMovieUseCase.fetchFromClient(page)).willReturn(dummyResponseFromUseCase);
+        given(fetchMovieUseCase.fetchFromClient(page)).willReturn(responseFromUseCase);
         given(authenticationHolder.getAuthentication())
             .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
@@ -83,13 +82,16 @@ class MovieControllerTest {
         ResultActions resultActions =
             mockMvc.perform(
                 get("/api/v1/movie/client/{page}", page)
-                    .contentType(MediaType.APPLICATION_JSON) // 요청의 Content-Type, 응답은 text/plain 일 것
+                    .contentType(MediaType.APPLICATION_JSON)
                     .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER));
 
         // then
         resultActions
             .andExpect(status().isOk())
-            .andExpect(content().string(EXPECTED_SUCCESS_STRING)) // 실제 컨트롤러 반환값 검증
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.success", is(true)))
+            .andExpect(jsonPath("$.data.page", is(page)))
+            .andExpect(jsonPath("$.data.movieResponses[0].movieName", is("Test Movie")))
             .andDo(print());
 
         // verify
@@ -102,7 +104,7 @@ class MovieControllerTest {
     class ContextWithInvalidPage {
 
       @Test
-      @DisplayName("UseCase에서 IllegalArgumentException 발생 시, 실패(400 Bad Request)를 반환한다")
+      @DisplayName("UseCase에서 IllegalArgumentException 발생 시, StreamFixApiResponse 실패 응답을 반환한다")
       void it_returns_400_bad_request_if_use_case_throws_illegal_argument() throws Exception {
         // given
         int invalidPage = -1;
@@ -120,9 +122,9 @@ class MovieControllerTest {
 
         // then
         resultActions
-            .andExpect(status().isBadRequest())
+            .andExpect(status().isOk()) // GlobalExceptionAdvice는 200으로 응답
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.status", is(400)))
+            .andExpect(jsonPath("$.success", is(false)))
             .andExpect(jsonPath("$.message", is("Page must be greater than 0")))
             .andDo(print());
 
@@ -136,7 +138,7 @@ class MovieControllerTest {
     class ContextWithUseCaseRuntimeException {
 
       @Test
-      @DisplayName("실패(500 Internal Server Error) 상태 코드와 에러 정보를 반환한다")
+      @DisplayName("실패 시 StreamFixApiResponse 실패 응답을 반환한다")
       void it_returns_500_internal_server_error() throws Exception {
         // given
         int page = 1;
@@ -155,9 +157,9 @@ class MovieControllerTest {
 
         // then
         resultActions
-            .andExpect(status().isInternalServerError())
+            .andExpect(status().isOk()) // GlobalExceptionAdvice는 200으로 응답
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.status", is(500)))
+            .andExpect(jsonPath("$.success", is(false)))
             .andExpect(jsonPath("$.message", is(errorMessage)))
             .andDo(print());
 

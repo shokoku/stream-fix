@@ -1,5 +1,6 @@
 package com.shokoku.streamfix.controller.movie;
 
+import com.shokoku.streamfix.controller.StreamFixApiResponse;
 import com.shokoku.streamfix.movie.FetchMovieUseCase;
 import com.shokoku.streamfix.movie.response.PageableMovieResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,8 @@ public class MovieController {
   private final FetchMovieUseCase fetchMovieUseCase;
 
   @GetMapping("/api/v1/movie/client/{page}")
-  public String fetchMoviePageable(@PathVariable int page) {
+  public StreamFixApiResponse<PageableMovieResponse> fetchMoviePageable(@PathVariable int page) {
     PageableMovieResponse pageableMovieResponse = fetchMovieUseCase.fetchFromClient(page);
-    return "Fetched from client page";
+    return StreamFixApiResponse.ok(pageableMovieResponse);
   }
 }
