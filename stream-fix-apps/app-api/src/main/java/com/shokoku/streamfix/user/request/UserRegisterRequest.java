@@ -1,3 +1,18 @@
 package com.shokoku.streamfix.user.request;
 
-public record UserRegisterRequest(String username, String password, String email, String phone) {}
+import com.shokoku.streamfix.annotaion.PasswordEncryption;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class UserRegisterRequest {
+
+  private final String username;
+
+  @PasswordEncryption private String password;
+
+  private final String email;
+
+  private final String phone;
+}
