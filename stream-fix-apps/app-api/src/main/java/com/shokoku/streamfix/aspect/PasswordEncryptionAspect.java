@@ -52,7 +52,6 @@ public class PasswordEncryptionAspect {
 
                 String encrypted = passwordEncoder.encode((String) encryptionField);
                 FieldUtils.writeField(field, object, encrypted);
-
               } catch (Exception e) {
                 throw new RuntimeException();
               }

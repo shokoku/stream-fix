@@ -20,7 +20,7 @@ public class UserService implements FetchUserUseCase, RegisterUserUseCase {
   @Override
   public UserResponse fetchUserByEmail(String email) {
     Optional<UserPortResponse> byEmail = fetchUserPort.findByEmail(email);
-    if (byEmail.isPresent()) {
+    if (byEmail.isEmpty()) {
       throw new UserDoesNotExistException();
     }
 

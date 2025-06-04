@@ -2,6 +2,7 @@ package com.shokoku.streamfix.security;
 
 import com.shokoku.streamfix.user.FetchUserUseCase;
 import com.shokoku.streamfix.user.response.UserResponse;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +26,8 @@ public class StreamFixUserDetailsService implements UserDetailsService {
         userResponse.password(),
         userResponse.email(),
         userResponse.phone(),
-        List.of(new SimpleGrantedAuthority(userResponse.role())));
+        List.of(
+            new SimpleGrantedAuthority(
+                StringUtils.isBlank(userResponse.role()) ? "-" : userResponse.role())));
   }
 }
