@@ -1,4 +1,4 @@
-package com.shokoku.streamfix.entity;
+package com.shokoku.streamfix.entity.sample;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

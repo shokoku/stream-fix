@@ -1,4 +1,4 @@
-package com.shokoku.streamfix.controller;
+package com.shokoku.streamfix.controller.user;
 
 import com.shokoku.streamfix.exception.ErrorCode;
 

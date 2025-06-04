@@ -1,6 +1,6 @@
-package com.shokoku.streamfix.repository;
+package com.shokoku.streamfix.repository.sample;
 
-import com.shokoku.streamfix.entity.SampleEntity;
+import com.shokoku.streamfix.entity.sample.SampleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SampleJpaRepository

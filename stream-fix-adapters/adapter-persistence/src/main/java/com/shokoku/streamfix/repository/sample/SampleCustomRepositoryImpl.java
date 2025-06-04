@@ -1,8 +1,8 @@
-package com.shokoku.streamfix.repository;
+package com.shokoku.streamfix.repository.sample;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.shokoku.streamfix.entity.QSampleEntity;
-import com.shokoku.streamfix.entity.SampleEntity;
+import com.shokoku.streamfix.entity.sample.QSampleEntity;
+import com.shokoku.streamfix.entity.sample.SampleEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

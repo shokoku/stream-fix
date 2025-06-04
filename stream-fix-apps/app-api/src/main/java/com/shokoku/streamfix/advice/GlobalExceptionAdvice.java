@@ -1,6 +1,6 @@
 package com.shokoku.streamfix.advice;
 
-import com.shokoku.streamfix.controller.StreamFixApiResponse;
+import com.shokoku.streamfix.controller.user.StreamFixApiResponse;
 import com.shokoku.streamfix.exception.ErrorCode;
 import com.shokoku.streamfix.exception.UserException;
 import lombok.extern.slf4j.Slf4j;

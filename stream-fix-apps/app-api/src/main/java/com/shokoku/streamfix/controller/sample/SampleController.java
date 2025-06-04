@@ -1,6 +1,8 @@
-package com.shokoku.streamfix.sample;
+package com.shokoku.streamfix.controller.sample;
 
-import com.shokoku.streamfix.controller.StreamFixApiResponse;
+import com.shokoku.streamfix.controller.user.StreamFixApiResponse;
+import com.shokoku.streamfix.sample.SearchSampleUseCase;
+import com.shokoku.streamfix.sample.response.SampleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

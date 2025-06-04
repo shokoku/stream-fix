@@ -1,8 +1,8 @@
-package com.shokoku.streamfix.controller;
+package com.shokoku.streamfix.controller.user;
 
+import com.shokoku.streamfix.controller.user.request.UserRegisterRequest;
 import com.shokoku.streamfix.user.RegisterUserUseCase;
 import com.shokoku.streamfix.user.command.UserRegisterCommand;
-import com.shokoku.streamfix.user.request.UserRegisterRequest;
 import com.shokoku.streamfix.user.response.UserRegisterResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,4 +1,4 @@
-package com.shokoku.streamfix.user.request;
+package com.shokoku.streamfix.controller.user.request;
 
 import com.shokoku.streamfix.annotaion.PasswordEncryption;
 import lombok.AllArgsConstructor;

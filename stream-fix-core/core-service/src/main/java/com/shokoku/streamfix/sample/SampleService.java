@@ -1,5 +1,6 @@
 package com.shokoku.streamfix.sample;
 
+import com.shokoku.streamfix.sample.response.SampleResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

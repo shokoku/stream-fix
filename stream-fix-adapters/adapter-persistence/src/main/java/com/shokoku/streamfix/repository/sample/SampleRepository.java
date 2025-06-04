@@ -1,6 +1,6 @@
-package com.shokoku.streamfix.repository;
+package com.shokoku.streamfix.repository.sample;
 
-import com.shokoku.streamfix.entity.SampleEntity;
+import com.shokoku.streamfix.entity.sample.SampleEntity;
 import com.shokoku.streamfix.sample.SamplePersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,6 @@
 package com.shokoku.streamfix.controller.movie;
 
-import com.shokoku.streamfix.controller.StreamFixApiResponse;
+import com.shokoku.streamfix.controller.user.StreamFixApiResponse;
 import com.shokoku.streamfix.movie.FetchMovieUseCase;
 import com.shokoku.streamfix.movie.response.PageableMovieResponse;
 import lombok.RequiredArgsConstructor;
