@@ -33,7 +33,8 @@ public class SecurityConfig {
     httpSecurity.userDetailsService(streamFixUserDetailsService);
     httpSecurity.authorizeHttpRequests(
         auth ->
-            auth.requestMatchers("/api/v1/user/register", "/api/v1/user/login")
+            auth.requestMatchers(
+                    "/api/v1/user/register", "/api/v1/user/login", "/api/v1/user/callback")
                 .permitAll()
                 .anyRequest()
                 .authenticated());

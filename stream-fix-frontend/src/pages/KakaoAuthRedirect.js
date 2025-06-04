@@ -9,7 +9,7 @@ function KakaoAuthRedirect() {
     const code = new URL(window.location.href).searchParams.get("code");
 
     if (code) {
-      axios.post('http://localhost:8080/api/v1/auth/callback', { code })
+      axios.post('http://localhost:8080/api/v1/user/callback', { code })
       .then(response => {
         console.log(response)
         const token = response.data.data.accessToken;
