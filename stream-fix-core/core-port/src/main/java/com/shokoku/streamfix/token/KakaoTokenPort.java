@@ -1,6 +1,6 @@
 package com.shokoku.streamfix.token;
 
-public interface KaKaoTokenPort {
+public interface KakaoTokenPort {
 
   String getAccessTokenByCode(String code);
 }

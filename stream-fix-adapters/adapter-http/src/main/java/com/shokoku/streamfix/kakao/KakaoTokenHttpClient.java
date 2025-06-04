@@ -1,6 +1,6 @@
 package com.shokoku.streamfix.kakao;
 
-import com.shokoku.streamfix.token.KaKaoTokenPort;
+import com.shokoku.streamfix.token.KakaoTokenPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
-public class KakaoTokenHttpClient implements KaKaoTokenPort {
+public class KakaoTokenHttpClient implements KakaoTokenPort {
 
   @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
   private String kakaoClientId;

@@ -16,6 +16,7 @@ public class UserService implements FetchUserUseCase, RegisterUserUseCase {
 
   private final FetchUserPort fetchUserPort;
   private final InsertUserPort insertUserPort;
+  private final KakaoUserPort kakaoUserPort;
 
   @Override
   public UserResponse fetchUserByEmail(String email) {
@@ -37,6 +38,16 @@ public class UserService implements FetchUserUseCase, RegisterUserUseCase {
   @Override
   public UserResponse findByProviderId(String providerId) {
     return null;
+  }
+
+  @Override
+  public UserResponse findKakaoUser(String accessToken) {
+    UserPortResponse userFromKakao = kakaoUserPort.findUserFromKakao(accessToken);
+    return UserResponse.builder()
+        .provider(userFromKakao.provider())
+        .providerId(userFromKakao.providerId())
+        .username(userFromKakao.username())
+        .build();
   }
 
   @Override

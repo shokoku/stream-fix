@@ -4,9 +4,11 @@ import com.shokoku.streamfix.controller.user.request.UserLoginRequest;
 import com.shokoku.streamfix.controller.user.request.UserRegisterRequest;
 import com.shokoku.streamfix.security.StreamFixAuthUser;
 import com.shokoku.streamfix.token.FetchTokenUseCase;
+import com.shokoku.streamfix.user.FetchUserUseCase;
 import com.shokoku.streamfix.user.RegisterUserUseCase;
 import com.shokoku.streamfix.user.command.UserRegisterCommand;
 import com.shokoku.streamfix.user.response.UserRegisterResponse;
+import com.shokoku.streamfix.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,6 +26,7 @@ public class UserController {
   private final RegisterUserUseCase registerUserUseCase;
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
   private final FetchTokenUseCase fetchTokenUseCase;
+  private final FetchUserUseCase fetchUserUseCase;
 
   @PostMapping("/api/v1/user/register")
   public StreamFixApiResponse<UserRegisterResponse> register(
@@ -54,6 +57,7 @@ public class UserController {
   public StreamFixApiResponse<String> kakaoCallBack(@RequestBody Map<String, String> request) {
     String code = request.get("code");
     String accessTokenFromKakao = fetchTokenUseCase.getTokenFromKakao(code);
+    UserResponse kakaoUser = fetchUserUseCase.findKakaoUser(accessTokenFromKakao);
     return StreamFixApiResponse.ok(null);
   }
 }

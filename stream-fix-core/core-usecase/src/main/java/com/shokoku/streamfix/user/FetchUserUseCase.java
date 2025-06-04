@@ -7,4 +7,6 @@ public interface FetchUserUseCase {
   UserResponse fetchUserByEmail(String email);
 
   UserResponse findByProviderId(String providerId);
+
+  UserResponse findKakaoUser(String accessToken);
 }
