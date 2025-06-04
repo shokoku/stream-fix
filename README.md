@@ -108,9 +108,15 @@ docker-compose up -d
 
 ### 3. API 설정 파일 생성
 ```bash
+# env 환경 변수 설정
+cp .env.sample .env
+# .env 파일을 열어서 실제 값들을 입력하세요
+```
+
+```bash
 # TMDB API 설정
 cp stream-fix-adapters/adapter-http/src/main/resources/adapter-http-property-sample.yml \
-   stream-fix-adapters/adapter-http/src/main/resources/adapter-http-property.yml
+stream-fix-adapters/adapter-http/src/main/resources/adapter-http-property.yml
 ```
 
 `adapter-http-property.yml` 파일에 TMDB API 키 설정:
