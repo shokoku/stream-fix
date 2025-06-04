@@ -30,6 +30,7 @@ public class TokenService implements FetchTokenUseCase, CreateTokenUseCase, Upda
   private final UpdateTokenPort updateTokenPort;
   private final SearchTokenPort searchTokenPort;
   private final FetchUserUseCase fetchUserUseCase;
+  private final KaKaoTokenPort kaKaoTokenPort;
 
   @Override
   public TokenResponse createNewToken(String userId) {
@@ -51,14 +52,14 @@ public class TokenService implements FetchTokenUseCase, CreateTokenUseCase, Upda
 
   @Override
   public String getTokenFromKakao(String code) {
-    return "";
+    return kaKaoTokenPort.getAccessTokenByCode(code);
   }
 
   @Override
   public UserResponse findUserByAccessToken(String accessToken) {
     Claims claims = parseClaims(accessToken);
 
-    Object userId = claims.get("user_id");
+    Object userId = claims.get("userId");
 
     if (ObjectUtils.isEmpty(userId)) {
       throw new RuntimeException();

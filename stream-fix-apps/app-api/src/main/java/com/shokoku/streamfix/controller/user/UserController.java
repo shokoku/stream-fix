@@ -3,6 +3,7 @@ package com.shokoku.streamfix.controller.user;
 import com.shokoku.streamfix.controller.user.request.UserLoginRequest;
 import com.shokoku.streamfix.controller.user.request.UserRegisterRequest;
 import com.shokoku.streamfix.security.StreamFixAuthUser;
+import com.shokoku.streamfix.token.FetchTokenUseCase;
 import com.shokoku.streamfix.user.RegisterUserUseCase;
 import com.shokoku.streamfix.user.command.UserRegisterCommand;
 import com.shokoku.streamfix.user.response.UserRegisterResponse;
@@ -22,6 +23,7 @@ public class UserController {
 
   private final RegisterUserUseCase registerUserUseCase;
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
+  private final FetchTokenUseCase fetchTokenUseCase;
 
   @PostMapping("/api/v1/user/register")
   public StreamFixApiResponse<UserRegisterResponse> register(
@@ -51,6 +53,7 @@ public class UserController {
   @PostMapping("/api/v1/user/callback")
   public StreamFixApiResponse<String> kakaoCallBack(@RequestBody Map<String, String> request) {
     String code = request.get("code");
+    String accessTokenFromKakao = fetchTokenUseCase.getTokenFromKakao(code);
     return StreamFixApiResponse.ok(null);
   }
 }
