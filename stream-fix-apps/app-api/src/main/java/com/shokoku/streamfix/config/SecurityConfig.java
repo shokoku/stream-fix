@@ -1,5 +1,6 @@
 package com.shokoku.streamfix.config;
 
+import com.shokoku.streamfix.security.StreamFixUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,15 +22,16 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+  private final StreamFixUserDetailsService streamFixUserDetailsService;
+
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
     httpSecurity.httpBasic(AbstractHttpConfigurer::disable);
     httpSecurity.csrf(AbstractHttpConfigurer::disable);
     httpSecurity.formLogin(AbstractHttpConfigurer::disable);
     httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-
+    httpSecurity.userDetailsService(streamFixUserDetailsService);
     httpSecurity.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
-
     httpSecurity.oauth2Login(oauth2 -> oauth2.failureUrl("/login?error=true"));
     return httpSecurity.build();
   }
