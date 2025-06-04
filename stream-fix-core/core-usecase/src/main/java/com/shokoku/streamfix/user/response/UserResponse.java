@@ -1,4 +1,4 @@
-package com.shokoku.streamfix.user.command;
+package com.shokoku.streamfix.user.response;
 
 import lombok.Builder;
 

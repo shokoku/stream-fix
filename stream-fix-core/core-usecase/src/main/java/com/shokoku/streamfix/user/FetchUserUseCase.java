@@ -1,6 +1,6 @@
 package com.shokoku.streamfix.user;
 
-import com.shokoku.streamfix.user.command.UserResponse;
+import com.shokoku.streamfix.user.response.UserResponse;
 
 public interface FetchUserUseCase {
 

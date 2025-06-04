@@ -31,7 +31,10 @@ public class SecurityConfig {
     httpSecurity.formLogin(AbstractHttpConfigurer::disable);
     httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
     httpSecurity.userDetailsService(streamFixUserDetailsService);
-    httpSecurity.authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
+    httpSecurity.authorizeHttpRequests(
+        auth ->
+            auth.requestMatchers("/api/v1/user/register").permitAll().anyRequest().authenticated());
+
     httpSecurity.oauth2Login(oauth2 -> oauth2.failureUrl("/login?error=true"));
     return httpSecurity.build();
   }

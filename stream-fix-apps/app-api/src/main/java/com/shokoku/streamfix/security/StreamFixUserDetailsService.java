@@ -1,7 +1,7 @@
 package com.shokoku.streamfix.security;
 
 import com.shokoku.streamfix.user.FetchUserUseCase;
-import com.shokoku.streamfix.user.command.UserResponse;
+import com.shokoku.streamfix.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;

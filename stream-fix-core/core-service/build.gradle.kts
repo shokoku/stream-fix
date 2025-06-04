@@ -2,6 +2,7 @@ dependencies{
     implementation(project(":stream-fix-core:core-usecase"))
     implementation(project(":stream-fix-core:core-port"))
     implementation(project(":stream-fix-commons"))
+    implementation(project(":stream-fix-core:core-domain"))
     runtimeOnly(project(":stream-fix-adapters:adapter-http"))
     runtimeOnly(project(":stream-fix-adapters:adapter-persistence"))
     runtimeOnly(project(":stream-fix-adapters:adapter-redis"))

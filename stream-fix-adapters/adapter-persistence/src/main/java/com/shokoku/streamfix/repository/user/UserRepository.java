@@ -1,20 +1,24 @@
 package com.shokoku.streamfix.repository.user;
 
 import com.shokoku.streamfix.entity.user.UserEntity;
+import com.shokoku.streamfix.user.CreateUser;
 import com.shokoku.streamfix.user.FetchUserPort;
+import com.shokoku.streamfix.user.InsertUserPort;
 import com.shokoku.streamfix.user.UserPortResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepository implements FetchUserPort {
+public class UserRepository implements FetchUserPort, InsertUserPort {
 
   private final UserJpaRepository userJpaRepository;
 
   @Override
+  @Transactional
   public Optional<UserPortResponse> findByEmail(String email) {
     Optional<UserEntity> byEmail = userJpaRepository.findByEmail(email);
 
@@ -27,5 +31,20 @@ public class UserRepository implements FetchUserPort {
                 .email(userEntity.getEmail())
                 .phone(userEntity.getPhone())
                 .build());
+  }
+
+  @Override
+  @Transactional
+  public UserPortResponse create(CreateUser user) {
+    UserEntity userEntity =
+        new UserEntity(user.username(), user.encryptedPassword(), user.email(), user.phone());
+    UserEntity save = userJpaRepository.save(userEntity);
+    return UserPortResponse.builder()
+        .userId(save.getUserID())
+        .username(save.getUserName())
+        .password(save.getPassword())
+        .email(save.getEmail())
+        .phone(save.getPhone())
+        .build();
   }
 }
