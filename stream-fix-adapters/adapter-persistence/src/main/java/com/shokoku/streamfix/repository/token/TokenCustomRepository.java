@@ -1,3 +1,9 @@
 package com.shokoku.streamfix.repository.token;
 
-public interface TokenCustomRepository {}
+import com.shokoku.streamfix.entity.token.TokenEntity;
+
+import java.util.Optional;
+
+public interface TokenCustomRepository {
+  Optional<TokenEntity> findByUserId(String userId);
+}
