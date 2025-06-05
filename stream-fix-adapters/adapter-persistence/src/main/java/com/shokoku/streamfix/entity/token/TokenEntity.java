@@ -1,5 +1,6 @@
 package com.shokoku.streamfix.entity.token;
 
+import com.shokoku.streamfix.audit.MutableBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "tokens")
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class TokenEntity {
+public class TokenEntity extends MutableBaseEntity {
 
   @Id
   @Column(name = "TOKEN_ID")
