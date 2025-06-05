@@ -37,7 +37,16 @@ public class UserService implements FetchUserUseCase, RegisterUserUseCase {
 
   @Override
   public UserResponse findByProviderId(String providerId) {
-    return null;
+    return fetchUserPort
+        .findByProviderId(providerId)
+        .map(
+            it ->
+                UserResponse.builder()
+                    .providerId(it.providerId())
+                    .provider(it.provider())
+                    .username(it.username())
+                    .build())
+        .orElse(null);
   }
 
   @Override
@@ -56,7 +65,7 @@ public class UserService implements FetchUserUseCase, RegisterUserUseCase {
     Optional<UserPortResponse> byEmail = fetchUserPort.findByEmail(email);
 
     if (byEmail.isPresent()) {
-      throw new UserException.UserAllReadyExistException();
+      throw new UserException.UserAlreadyExistException();
     }
 
     UserPortResponse response =
@@ -69,5 +78,17 @@ public class UserService implements FetchUserUseCase, RegisterUserUseCase {
                 .build());
 
     return new UserRegisterResponse(response.username(), response.email(), response.phone());
+  }
+
+  @Override
+  public UserRegisterResponse registerSocialUser(
+      String username, String provider, String providerId) {
+    Optional<UserPortResponse> byProviderId = fetchUserPort.findByProviderId(providerId);
+
+    if (byProviderId.isPresent()) {
+      return null;
+    }
+    UserPortResponse socialUser = insertUserPort.createSocialUser(username, provider, providerId);
+    return new UserRegisterResponse(socialUser.username(), null, null);
   }
 }

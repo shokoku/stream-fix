@@ -4,6 +4,7 @@ import com.shokoku.streamfix.controller.user.request.UserLoginRequest;
 import com.shokoku.streamfix.controller.user.request.UserRegisterRequest;
 import com.shokoku.streamfix.security.StreamFixAuthUser;
 import com.shokoku.streamfix.token.FetchTokenUseCase;
+import com.shokoku.streamfix.token.UpdateTokenUseCase;
 import com.shokoku.streamfix.user.FetchUserUseCase;
 import com.shokoku.streamfix.user.RegisterUserUseCase;
 import com.shokoku.streamfix.user.command.UserRegisterCommand;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +29,7 @@ public class UserController {
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
   private final FetchTokenUseCase fetchTokenUseCase;
   private final FetchUserUseCase fetchUserUseCase;
+  private final UpdateTokenUseCase updateTokenUseCase;
 
   @PostMapping("/api/v1/user/register")
   public StreamFixApiResponse<UserRegisterResponse> register(
@@ -54,10 +57,18 @@ public class UserController {
   }
 
   @PostMapping("/api/v1/user/callback")
-  public StreamFixApiResponse<String> kakaoCallBack(@RequestBody Map<String, String> request) {
+  public StreamFixApiResponse<String> kakaoCallback(@RequestBody Map<String, String> request) {
     String code = request.get("code");
     String accessTokenFromKakao = fetchTokenUseCase.getTokenFromKakao(code);
     UserResponse kakaoUser = fetchUserUseCase.findKakaoUser(accessTokenFromKakao);
-    return StreamFixApiResponse.ok(null);
+
+    UserResponse byProviderId = fetchUserUseCase.findByProviderId(kakaoUser.providerId());
+
+    if (ObjectUtils.isEmpty(byProviderId)) {
+      registerUserUseCase.registerSocialUser(
+          kakaoUser.username(), kakaoUser.provider(), kakaoUser.providerId());
+    }
+
+    return StreamFixApiResponse.ok(updateTokenUseCase.upsertToken(kakaoUser.providerId()));
   }
 }

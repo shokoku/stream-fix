@@ -91,4 +91,20 @@ public class TokenService implements FetchTokenUseCase, CreateTokenUseCase, Upda
     byte[] keyBytes = Decoders.BASE64.decode(secretKey);
     return Keys.hmacShaKeyFor(keyBytes);
   }
+
+  @Override
+  public String upsertToken(String providerId) {
+    TokenPortResponse byUserId = searchTokenPort.findByUserId(providerId);
+
+    String accessToken = getToken(providerId, Duration.ofHours(3));
+    String refreshToken = getToken(providerId, Duration.ofHours(24));
+
+    if (byUserId == null) {
+      insertTokenPort.create(providerId, accessToken, refreshToken);
+
+    } else {
+      updateTokenPort.updateToken(providerId, accessToken, refreshToken);
+    }
+    return accessToken;
+  }
 }

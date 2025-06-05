@@ -1,6 +1,7 @@
 package com.shokoku.streamfix.user;
 
 import com.shokoku.streamfix.exception.UserException;
+import com.shokoku.streamfix.exception.UserException.UserAlreadyExistException;
 import com.shokoku.streamfix.user.command.UserRegisterCommand;
 import com.shokoku.streamfix.user.response.UserRegisterResponse;
 import com.shokoku.streamfix.user.response.UserResponse;
@@ -256,7 +257,7 @@ class UserServiceTest {
 
       // when & then
       assertThatThrownBy(() -> userService.register(command))
-          .isInstanceOf(UserException.UserAllReadyExistException.class);
+          .isInstanceOf(UserAlreadyExistException.class);
 
       then(fetchUserPort).should().findByEmail(command.email());
       then(insertUserPort).should(never()).create(any(CreateUser.class));
