@@ -4,6 +4,29 @@ spring:
       - 'classpath:adapter-http-property.yml'
       - 'classpath:adapter-persistence-property.yml'
       - 'classpath:adapter-redis-property.yml'
+  batch:
+    job:
+      name: ${job.name:NONE}
+  datasource:
+    hikari:
+      jdbc-url: jdbc:mysql://localhost:3306/streamfix
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root
+      password: admin
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+    generate-ddl: false
+    open-in-view: false
+    database: mysql
+    show-sql: true
+
+
+  profiles:
+    active: local
   security:
     oauth2:
       client:
@@ -26,6 +49,8 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expire:
-    access-token: 1
+    access-token: 3
     refresh-token: 24
 
+server:
+  port: 8081

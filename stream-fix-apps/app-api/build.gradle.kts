@@ -14,7 +14,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.data:spring-data-commons")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-        implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-core")
 
     integrationImplementation("org.springframework.boot:spring-boot-starter-test")
     integrationImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
