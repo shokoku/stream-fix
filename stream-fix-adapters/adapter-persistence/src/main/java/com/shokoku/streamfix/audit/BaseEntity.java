@@ -1,4 +1,4 @@
-package com.shokoku.streamfix.aduit;
+package com.shokoku.streamfix.audit;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

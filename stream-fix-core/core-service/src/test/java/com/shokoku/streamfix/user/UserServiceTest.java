@@ -33,6 +33,7 @@ class UserServiceTest {
 
   @Mock private FetchUserPort fetchUserPort;
   @Mock private InsertUserPort insertUserPort;
+  @Mock private KakaoUserPort kakaoUserPort;
 
   @InjectMocks private UserService userService;
 
@@ -311,7 +312,7 @@ class UserServiceTest {
 
       // Lombok @RequiredArgsConstructor가 생성한 생성자 확인
       assertThat(serviceClass.getDeclaredConstructors()).hasSize(1);
-      assertThat(serviceClass.getDeclaredConstructors()[0].getParameterCount()).isEqualTo(2);
+      assertThat(serviceClass.getDeclaredConstructors()[0].getParameterCount()).isEqualTo(3);
     }
   }
 

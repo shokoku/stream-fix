@@ -13,31 +13,27 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@Table(name = "users")
+@Table(name = "social_users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserEntity extends MutableBaseEntity {
+public class SocialUserEntity extends MutableBaseEntity {
 
   @Id
-  @Column(name = "USER_ID")
-  private String userId;
+  @Column(name = "SOCIAL_USER_ID")
+  private String socialUserId;
 
   @Column(name = "USER_NAME")
   private String userName;
 
-  @Column(name = "PASSWORD")
-  private String password;
+  @Column(name = "PROVIDER")
+  private String provider;
 
-  @Column(name = "EMAIL")
-  private String email;
+  @Column(name = "PROVIDER_ID")
+  private String providerId;
 
-  @Column(name = "PHONE")
-  private String phone;
-
-  public UserEntity(String userName, String password, String email, String phone) {
-    this.userId = UUID.randomUUID().toString();
+  public SocialUserEntity(String userName, String provider, String providerId) {
+    this.socialUserId = UUID.randomUUID().toString();
     this.userName = userName;
-    this.password = password;
-    this.email = email;
-    this.phone = phone;
+    this.provider = provider;
+    this.providerId = providerId;
   }
 }

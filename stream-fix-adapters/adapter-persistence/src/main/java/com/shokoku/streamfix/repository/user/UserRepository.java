@@ -1,5 +1,6 @@
 package com.shokoku.streamfix.repository.user;
 
+import com.shokoku.streamfix.entity.user.SocialUserEntity;
 import com.shokoku.streamfix.entity.user.UserEntity;
 import com.shokoku.streamfix.user.CreateUser;
 import com.shokoku.streamfix.user.FetchUserPort;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class UserRepository implements FetchUserPort, InsertUserPort {
 
   private final UserJpaRepository userJpaRepository;
+  private final SocialUserJpaRepository socialUserJpaRepository;
 
   @Override
   @Transactional
@@ -25,12 +27,28 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
     return byEmail.map(
         userEntity ->
             UserPortResponse.builder()
-                .userId(userEntity.getUserID())
+                .userId(userEntity.getUserId())
                 .password(userEntity.getPassword())
                 .username(userEntity.getEmail())
                 .email(userEntity.getEmail())
                 .phone(userEntity.getPhone())
                 .build());
+  }
+
+  @Override
+  public Optional<UserPortResponse> findByProviderId(String providerId) {
+    Optional<SocialUserEntity> byProviderId = socialUserJpaRepository.findByProviderId(providerId);
+    if (byProviderId.isEmpty()) {
+      return Optional.empty();
+    }
+
+    SocialUserEntity socialUserEntity = byProviderId.get();
+    return Optional.of(
+        UserPortResponse.builder()
+            .providerId(socialUserEntity.getProviderId())
+            .provider(socialUserEntity.getProvider())
+            .username(socialUserEntity.getUserName())
+            .build());
   }
 
   @Override
@@ -40,11 +58,23 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
         new UserEntity(user.username(), user.encryptedPassword(), user.email(), user.phone());
     UserEntity save = userJpaRepository.save(userEntity);
     return UserPortResponse.builder()
-        .userId(save.getUserID())
+        .userId(save.getUserId())
         .username(save.getUserName())
         .password(save.getPassword())
         .email(save.getEmail())
         .phone(save.getPhone())
+        .build();
+  }
+
+  @Override
+  @Transactional
+  public UserPortResponse createSocialUser(String username, String provider, String providerId) {
+    SocialUserEntity socialUserEntity = new SocialUserEntity(username, provider, providerId);
+    socialUserJpaRepository.save(socialUserEntity);
+    return UserPortResponse.builder()
+        .providerId(socialUserEntity.getProviderId())
+        .provider(socialUserEntity.getProvider())
+        .username(socialUserEntity.getUserName())
         .build();
   }
 }

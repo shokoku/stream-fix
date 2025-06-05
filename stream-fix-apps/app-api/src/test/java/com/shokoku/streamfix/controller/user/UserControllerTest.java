@@ -1,29 +1,23 @@
 package com.shokoku.streamfix.controller.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shokoku.streamfix.StreamFixApplication;
-import com.shokoku.streamfix.authcation.AuthenticationHolder;
-import com.shokoku.streamfix.authcation.RequestedBy;
-import com.shokoku.streamfix.config.RequestedByMvcConfigurer;
+import com.shokoku.streamfix.advice.GlobalExceptionAdvice;
 import com.shokoku.streamfix.controller.user.request.UserRegisterRequest;
-import com.shokoku.streamfix.interceptor.RequestedByInterceptor;
 import com.shokoku.streamfix.user.RegisterUserUseCase;
 import com.shokoku.streamfix.user.response.UserRegisterResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.Optional;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -31,31 +25,29 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
-@ContextConfiguration(classes = {StreamFixApplication.class, RequestedByMvcConfigurer.class})
-@Import(RequestedByInterceptor.class)
+@ExtendWith(MockitoExtension.class)
 @DisplayName("UserController API 테스트")
-@WithMockUser
 class UserControllerTest {
 
-  @Autowired private MockMvc mockMvc;
+  @Mock private RegisterUserUseCase registerUserUseCase;
+  @Mock private AuthenticationManagerBuilder authenticationManagerBuilder;
 
-  @MockBean private RegisterUserUseCase registerUserUseCase;
-  @MockBean private AuthenticationHolder authenticationHolder;
+  @InjectMocks private UserController userController;
 
-  private final String TEST_USER = "test-user";
+  private MockMvc mockMvc;
 
   @BeforeEach
   void setUp() {
-    given(authenticationHolder.getAuthentication())
-        .willReturn(Optional.of(new RequestedBy(TEST_USER)));
+    mockMvc =
+        MockMvcBuilders.standaloneSetup(userController)
+            .setControllerAdvice(new GlobalExceptionAdvice())
+            .build();
   }
 
   @Nested
@@ -77,21 +69,17 @@ class UserControllerTest {
             new UserRegisterResponse("testuser", "test@example.com", "010-1234-5678");
 
         given(registerUserUseCase.register(any())).willReturn(mockResponse);
-        given(authenticationHolder.getAuthentication())
-            .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
         // when
         ResultActions resultActions =
             mockMvc.perform(
                 post("/api/v1/user/register")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(createJsonContent(request))
-                    .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER)
-                    .with(csrf()));
+                    .content(createJsonContent(request)));
 
         // then
         resultActions
-            .andDo(print()) // 응답을 먼저 출력해서 확인
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.success", is(true)))
@@ -113,17 +101,13 @@ class UserControllerTest {
             new UserRegisterResponse("한글사용자", "korean@example.com", "010-9876-5432");
 
         given(registerUserUseCase.register(any())).willReturn(mockResponse);
-        given(authenticationHolder.getAuthentication())
-            .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
         // when
         ResultActions resultActions =
             mockMvc.perform(
                 post("/api/v1/user/register")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(createJsonContent(request))
-                    .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER)
-                    .with(csrf()));
+                    .content(createJsonContent(request)));
 
         // then
         resultActions
@@ -148,17 +132,13 @@ class UserControllerTest {
 
         given(registerUserUseCase.register(any()))
             .willThrow(new RuntimeException("User already exists"));
-        given(authenticationHolder.getAuthentication())
-            .willReturn(Optional.of(new RequestedBy(TEST_USER)));
 
         // when
         ResultActions resultActions =
             mockMvc.perform(
                 post("/api/v1/user/register")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(createJsonContent(request))
-                    .header(RequestedByInterceptor.REQUEST_BY_HEADER, TEST_USER)
-                    .with(csrf()));
+                    .content(createJsonContent(request)));
 
         // then
         resultActions
