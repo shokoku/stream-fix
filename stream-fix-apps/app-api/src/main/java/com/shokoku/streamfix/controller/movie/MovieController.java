@@ -1,9 +1,12 @@
 package com.shokoku.streamfix.controller.movie;
 
 import com.shokoku.streamfix.controller.user.StreamFixApiResponse;
+import com.shokoku.streamfix.filter.JwtTokenProvider;
+import com.shokoku.streamfix.movie.DownloadMovieUseCase;
 import com.shokoku.streamfix.movie.FetchMovieUseCase;
 import com.shokoku.streamfix.movie.response.PageableMovieResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MovieController {
 
   private final FetchMovieUseCase fetchMovieUseCase;
+  private final DownloadMovieUseCase downloadMovieUseCase;
+  private final JwtTokenProvider jwtTokenProvider;
 
   @GetMapping("/api/v1/movie/client/{page}")
   public StreamFixApiResponse<PageableMovieResponse> fetchMoviePageable(@PathVariable int page) {
@@ -26,5 +31,14 @@ public class MovieController {
   public StreamFixApiResponse<PageableMovieResponse> search(@RequestParam int page) {
     PageableMovieResponse pageableMovieResponse = fetchMovieUseCase.fetchFromDb(page);
     return StreamFixApiResponse.ok(pageableMovieResponse);
+  }
+
+  @PostMapping("/api/v1/movie/{movieId}/download")
+  @PreAuthorize("hasAnyRole('ROLE_BRONZE', 'ROLE_SILVER', 'ROLE_GOLD')")
+  public StreamFixApiResponse<String> download(@PathVariable String movieId) {
+    String download =
+        downloadMovieUseCase.download(
+            jwtTokenProvider.getUserId(), jwtTokenProvider.getRole(), movieId);
+    return StreamFixApiResponse.ok(download);
   }
 }

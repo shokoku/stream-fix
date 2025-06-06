@@ -42,6 +42,7 @@ public class UserService implements FetchUserUseCase, RegisterUserUseCase {
         .map(
             it ->
                 UserResponse.builder()
+                    .userId(it.userId())
                     .providerId(it.providerId())
                     .provider(it.provider())
                     .username(it.username())

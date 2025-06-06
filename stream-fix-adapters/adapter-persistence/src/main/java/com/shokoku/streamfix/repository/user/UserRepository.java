@@ -47,15 +47,20 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
 
     SocialUserEntity socialUserEntity = byProviderId.get();
 
-    Optional<UserSubscription> byUserId = userSubscriptionRepository.findByUserId(
-        socialUserEntity.getSocialUserId());
+    Optional<UserSubscription> byUserId =
+        userSubscriptionRepository.findByUserId(socialUserEntity.getSocialUserId());
 
     return Optional.of(
         UserPortResponse.builder()
+            .userId(socialUserEntity.getSocialUserId())
             .providerId(socialUserEntity.getProviderId())
             .provider(socialUserEntity.getProvider())
             .username(socialUserEntity.getUserName())
-            .role(byUserId.orElse(UserSubscription.newSubscription(socialUserEntity.getSocialUserId())).getSubscriptionType().toRole())
+            .role(
+                byUserId
+                    .orElse(UserSubscription.newSubscription(socialUserEntity.getSocialUserId()))
+                    .getSubscriptionType()
+                    .toRole())
             .build());
   }
 
