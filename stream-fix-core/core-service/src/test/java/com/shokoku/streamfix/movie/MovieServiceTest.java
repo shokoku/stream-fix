@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,8 @@ import static org.mockito.Mockito.times;
 class MovieServiceTest {
 
   @Mock private TmdbMoviePort tmdbMoviePort;
+
+  @Mock private PersistenceMoviePort persistenceMoviePort; // 새로 추가된 의존성
 
   @InjectMocks private MovieService movieService;
 
@@ -140,6 +143,56 @@ class MovieServiceTest {
   }
 
   @Nested
+  @DisplayName("insert 영화 데이터 저장 테스트")
+  class InsertMovieTest {
+
+    @Test
+    @DisplayName("영화 목록을 저장소에 저장한다")
+    void shouldInsertMoviesToPersistence() {
+      // given
+      List<MovieResponse> movieResponses =
+          Arrays.asList(
+              new MovieResponse("테스트 영화", false, Arrays.asList("액션"), "테스트용 영화", "2024-01-01"));
+
+      // when
+      movieService.insert(movieResponses);
+
+      // then
+      then(persistenceMoviePort).should(times(1)).insert(any(StreamFixMovie.class));
+    }
+
+    @Test
+    @DisplayName("빈 영화 목록에 대해서는 저장소 호출이 발생하지 않는다")
+    void shouldNotCallPersistenceWhenEmptyList() {
+      // given
+      List<MovieResponse> emptyMovieResponses = Collections.emptyList();
+
+      // when
+      movieService.insert(emptyMovieResponses);
+
+      // then
+      then(persistenceMoviePort).should(times(0)).insert(any(StreamFixMovie.class));
+    }
+
+    @Test
+    @DisplayName("여러 영화에 대해 각각 저장소 호출이 발생한다")
+    void shouldCallPersistenceForEachMovie() {
+      // given
+      List<MovieResponse> movieResponses =
+          Arrays.asList(
+              new MovieResponse("영화1", false, Arrays.asList("액션"), "설명1", "2024-01-01"),
+              new MovieResponse("영화2", false, Arrays.asList("드라마"), "설명2", "2024-01-02"),
+              new MovieResponse("영화3", false, Arrays.asList("코미디"), "설명3", "2024-01-03"));
+
+      // when
+      movieService.insert(movieResponses);
+
+      // then
+      then(persistenceMoviePort).should(times(3)).insert(any(StreamFixMovie.class));
+    }
+  }
+
+  @Nested
   @DisplayName("MovieService 인터페이스 구현 테스트")
   class MovieServiceInterfaceTest {
 
@@ -159,6 +212,13 @@ class MovieServiceTest {
     }
 
     @Test
+    @DisplayName("InsertMovieUseCase 인터페이스를 올바르게 구현한다")
+    void shouldImplementInsertMovieUseCaseCorrectly() {
+      // when & then
+      assertThat(movieService).isInstanceOf(InsertMovieUseCase.class);
+    }
+
+    @Test
     @DisplayName("서비스 클래스가 필요한 어노테이션들을 가진다")
     void shouldHaveRequiredAnnotations() {
       // given
@@ -170,7 +230,8 @@ class MovieServiceTest {
 
       // Lombok 어노테이션은 컴파일 시에 처리되므로 생성자 확인으로 대체
       assertThat(serviceClass.getDeclaredConstructors()).hasSize(1);
-      assertThat(serviceClass.getDeclaredConstructors()[0].getParameterCount()).isEqualTo(1);
+      assertThat(serviceClass.getDeclaredConstructors()[0].getParameterCount())
+          .isEqualTo(2); // 2개로 수정
     }
   }
 

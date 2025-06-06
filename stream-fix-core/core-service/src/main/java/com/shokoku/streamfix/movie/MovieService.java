@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class MovieService implements FetchMovieUseCase, InsertMovieUseCase {
 
   private final TmdbMoviePort tmdbMoviePort;
+  private final PersistenceMoviePort persistenceMoviePort;
 
   @Override
   public PageableMovieResponse fetchFromClient(int page) {
@@ -36,6 +37,16 @@ public class MovieService implements FetchMovieUseCase, InsertMovieUseCase {
 
   @Override
   public void insert(List<MovieResponse> items) {
-    log.info("[{}] {}", items.size(), items.get(0).movieName());
+    items.forEach(
+        it -> {
+          StreamFixMovie streamFixMovie =
+              StreamFixMovie.builder()
+                  .movieName(it.movieName())
+                  .isAdult(it.isAdult())
+                  .overview(it.overview())
+                  .genre("genre")
+                  .build();
+          persistenceMoviePort.insert(streamFixMovie);
+        });
   }
 }
