@@ -47,7 +47,8 @@ public class SecurityConfig {
     httpSecurity.oauth2Login(oauth2 -> oauth2.failureUrl("/login?error=true"));
     httpSecurity.addFilterBefore(
         jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-    httpSecurity.addFilterAfter(userHistoryLoggingFilter, UsernamePasswordAuthenticationFilter.class);
+    httpSecurity.addFilterAfter(
+        userHistoryLoggingFilter, UsernamePasswordAuthenticationFilter.class);
     return httpSecurity.build();
   }
 

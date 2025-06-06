@@ -1,11 +1,27 @@
 # StreamFix 🎬
-
-Spring Security 학습을 위한 구독 기반 스트리밍 서비스 프로젝트
+___
 
 ## 📋 프로젝트 개요
 
-StreamFix는 헥사고날 아키텍처(Hexagonal Architecture) 패턴을 적용하여 설계된 스트리밍 서비스 플랫폼입니다. 
-모듈화된 구조로 개발되어 유지보수성과 확장성을 고려했습니다.
+StreamFix는 헥사고날 아키텍처(Hexagonal Architecture) 패턴을 적용하여 설계된 스트리밍 서비스 플랫폼입니다. 모듈화된 구조로 개발되어 유지보수성과 확장성을 고려했습니다.
+
+## 🌟 최근 주요 업데이트 (Project Stabilization)
+
+최근 프로젝트 안정화 단계(Phase 1)를 통해 JDK 버전을 21로 마이그레이션하고, 주요 의존성을 최신 안정 버전으로 업데이트하여 보안성과 성능을 강화했습니다.
+
+- **JDK 21 마이그레이션**: 프로젝트의 기반 자바 버전을 17에서 **21**로 업그레이드했습니다.
+- **주요 의존성 업데이트**:
+    - Spring Boot: `3.3.3` → `3.5.0`
+    - Kotlin: `2.0.20` → `2.1.21`
+    - QueryDSL: `5.0.0` → `5.1.0`
+    - Fixture Monkey: `0.4.12` → `1.1.11`
+    - Asciidoctor Plugin: `3.3.2` → `4.0.4`
+    - 기타 라이브러리 및 플러그인 버전을 최신 안정 버전으로 동기화했습니다.
+- **의존성 구조 리팩토링**:
+    - **Spring Boot BOM 활용**: BOM(Bill of Materials)에서 관리하는 의존성(Jackson, JUnit 등)의 명시적 버전 선언을 제거하여 중복을 없애고 관리 효율을 높였습니다.
+    - **모듈별 최적화**: `app-batch`, `adapter-redis` 등 각 모듈에서 불필요한 `spring-boot-starter-web` 같은 의존성을 제거하여 JAR 파일 크기를 줄이고 빌드 시간을 단축했습니다.
+- **코드 스타일 일관성 확보**: `Spotless` 플러그인을 도입하여 `google-java-format` 기반으로 전체 코드 스타일을 통일했습니다.
+- **테스트 코드 정비**: 의존성 마이그레이션을 위해 기존 테스트 코드를 전체 삭제했으며, 새로운 표준에 맞는 테스트 전략 수립이 필요합니다.
 
 ## 🏗️ 아키텍처
 
@@ -36,7 +52,7 @@ StreamFix는 헥사고날 아키텍처(Hexagonal Architecture) 패턴을 적용�
 │                        Adapters                             │
 │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐  │
 │  │  adapter-http   │  │adapter-persisten│  │adapter-redis│  │
-│  │ (api sync )     │  │   (database)    │  │   (cash)    │  │ 
+│  │ (api sync )     │  │   (database)    │  │   (cache)   │  │
 │  └─────────────────┘  └─────────────────┘  └─────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -67,13 +83,14 @@ StreamFix는 헥사고날 아키텍처(Hexagonal Architecture) 패턴을 적용�
 ## 🛠️ 기술 스택
 
 ### Backend
-- **Java 17**
-- **Spring Boot 3.3.3**
+- **Java 21**
+- **Spring Boot 3.5.0**
 - **Spring Data JPA**
-- **QueryDSL 5.0.0**
+- **QueryDSL 5.1.0**
 - **MySQL 8.0**
 - **Redis**
 - **Flyway** (DB 마이그레이션)
+- **Spotless** (코드 포맷터)
 
 ### Frontend
 - **React 19.1.0**
@@ -89,13 +106,13 @@ StreamFix는 헥사고날 아키텍처(Hexagonal Architecture) 패턴을 적용�
 ## 🚀 시작하기
 
 ### 사전 요구사항
-- Java 17 이상
+- **Java 21** 이상
 - Node.js 16 이상
 - Docker & Docker Compose
 
 ### 1. 저장소 클론
 ```bash
-git clone [repository-url]
+git clone https://github.com/shokoku/stream-fix
 cd stream-fix
 ```
 
@@ -111,15 +128,14 @@ docker-compose up -d
 # env 환경 변수 설정
 cp .env.sample .env
 # .env 파일을 열어서 실제 값들을 입력하세요
-```
 
-```bash
 # TMDB API 설정
 cp stream-fix-adapters/adapter-http/src/main/resources/adapter-http-property-sample.yml \
-stream-fix-adapters/adapter-http/src/main/resources/adapter-http-property.yml
+   stream-fix-adapters/adapter-http/src/main/resources/adapter-http-property.yml
 ```
 
 `adapter-http-property.yml` 파일에 TMDB API 키 설정:
+
 ```yaml
 tmdb:
   auth:
@@ -142,33 +158,11 @@ npm install
 npm start
 ```
 
-## 📚 API 문서
-
-### 주요 엔드포인트
-
-#### 영화 API
-- `GET /api/v1/movie/client/{page}` - 현재 상영 중인 영화 목록 조회
-
-#### 샘플 API
-- `GET /api/v1/sample` - 샘플 데이터 조회
-
-### 테스트 요청
-```bash
-# 샘플 API 테스트
-curl http://localhost:8080/api/v1/sample
-
-# 영화 API 테스트
-curl http://localhost:8080/api/v1/movie/client/1
-```
-
 ## 🗄️ 데이터베이스
-
-### 테이블 구조
-- **users**: 사용자 정보
-- **sample**: 샘플 데이터
 
 ### 마이그레이션
 Flyway를 사용하여 데이터베이스 스키마를 관리합니다.
+
 - 마이그레이션 파일: `stream-fix-adapters/adapter-persistence/src/main/resources/flyway/`
 
 ## 🔧 개발 환경 설정
@@ -178,7 +172,11 @@ Flyway를 사용하여 데이터베이스 스키마를 관리합니다.
 - Lombok 플러그인 설치 필요
 
 ### 코드 포맷팅
-프로젝트에 설정된 포맷팅 규칙을 따릅니다.
+프로젝트에는 Spotless 플러그인이 적용되어 있어, google-java-format을 따릅니다. 커밋 전 아래 명령을 실행하여 코드 스타일을 일관성 있게 유지해주세요.
+
+```bash
+./gradlew spotlessApply
+```
 
 ## 📁 프로젝트 구조 상세
 
@@ -201,15 +199,3 @@ stream-fix/
 ├── stream-fix-commons/                # 공통 모듈
 └── infra/                            # 인프라 설정 (Docker)
 ```
-
-## 🌟 주요 특징
-
-1. **헥사고날 아키텍처**: 비즈니스 로직과 외부 연동의 명확한 분리
-2. **모듈화**: 관심사의 분리와 의존성 관리
-3. **테스트 가능한 구조**: 포트/어댑터 패턴으로 모킹 가능
-4. **확장 가능한 설계**: 새로운 어댑터 추가 용이
-
-
-## 📄 라이선스
-
-이 프로젝트는 학습 목적으로 만들어졌습니다.

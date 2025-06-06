@@ -7,17 +7,18 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -26,12 +27,13 @@ public class UserHistoryLoggingFilter extends OncePerRequestFilter {
   private final LogUserAuditHistoryCase logUserAuditHistoryCase;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws ServletException, IOException {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    CompletableFuture.runAsync(()-> log(authentication, request));
+    CompletableFuture.runAsync(() -> log(authentication, request));
 
     filterChain.doFilter(request, response);
   }
@@ -39,14 +41,14 @@ public class UserHistoryLoggingFilter extends OncePerRequestFilter {
   public void log(Authentication authentication, HttpServletRequest request) {
     logUserAuditHistoryCase.log(
         authentication.getName(),
-        authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(
-            Collectors.joining(",")),
+        authentication.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(",")),
         request.getRemoteAddr(),
         request.getMethod(),
         request.getRequestURI(),
         getHeaders(request),
-        "payload"
-    );
+        "payload");
   }
 
   private String getHeaders(HttpServletRequest request) {
@@ -66,6 +68,5 @@ public class UserHistoryLoggingFilter extends OncePerRequestFilter {
     } catch (JsonProcessingException e) {
       return "{}";
     }
-
   }
 }
