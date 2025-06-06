@@ -34,9 +34,6 @@ subprojects {
     apply(plugin = "idea")
 }
 
-dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter")
-}
 
 configureByLabels("java") {
     apply(plugin = "org.gradle.java")
@@ -46,8 +43,8 @@ configureByLabels("java") {
     apply(plugin = "com.diffplug.spotless")
 
     configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     tasks.withType<Test> {
@@ -106,8 +103,6 @@ configureByLabels("java") {
 
         val integrationImplementation by configurations
         val integrationRuntimeOnly by configurations
-
-        implementation("com.google.guava:guava")
 
         implementation("org.apache.commons:commons-lang3")
         implementation("org.apache.commons:commons-collections4")
