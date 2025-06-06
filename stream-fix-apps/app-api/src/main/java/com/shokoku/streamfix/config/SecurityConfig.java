@@ -1,6 +1,7 @@
 package com.shokoku.streamfix.config;
 
 import com.shokoku.streamfix.filter.JwtAuthenticationFilter;
+import com.shokoku.streamfix.filter.UserHistoryLoggingFilter;
 import com.shokoku.streamfix.security.StreamFixUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ public class SecurityConfig {
 
   private final StreamFixUserDetailsService streamFixUserDetailsService;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final UserHistoryLoggingFilter userHistoryLoggingFilter;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -45,6 +47,7 @@ public class SecurityConfig {
     httpSecurity.oauth2Login(oauth2 -> oauth2.failureUrl("/login?error=true"));
     httpSecurity.addFilterBefore(
         jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    httpSecurity.addFilterAfter(userHistoryLoggingFilter, UsernamePasswordAuthenticationFilter.class);
     return httpSecurity.build();
   }
 
