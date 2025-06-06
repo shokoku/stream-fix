@@ -80,18 +80,12 @@ configureByLabels("java") {
         }
 
         dependencies {
+            // Spring Boot BOM에서 관리하지 않는 의존성들만 명시적으로 버전 지정
             dependency("org.apache.commons:commons-lang3:${Versions.APACHE_COMMONS_LANG}")
             dependency("org.apache.commons:commons-collections4:${Versions.APACHE_COMMONS_COLLECTIONS}")
             dependency("com.navercorp.fixturemonkey:fixture-monkey-starter:${Versions.FIXTURE_MONKEY}")
             dependency("org.mapstruct:mapstruct:${Versions.MAPSTRUCT}")
             dependency("org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}")
-            dependency("com.fasterxml.jackson.core:jackson-databind:${Versions.JACKSON_CORE}")
-
-            dependency("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}")
-            dependency("org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT}")
-            dependency("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}")
-            dependency("org.assertj:assertj-core:${Versions.ASSERTJ_CORE}")
-            dependency("org.mockito:mockito-junit-jupiter:${Versions.MOCKITO_CORE}")
 
             dependency("com.epages:restdocs-api-spec:${Versions.RESTDOCS_API_SPEC}")
             dependency("com.epages:restdocs-api-spec-mockmvc:${Versions.RESTDOCS_API_SPEC}")
