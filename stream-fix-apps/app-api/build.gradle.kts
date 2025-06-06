@@ -1,5 +1,5 @@
 dependencies {
-    implementation(project(":stream-fix-core:core-usecase"))
+    implementation(project(":stream-fix-core:core-usecase")) // UseCase 인터페이스들 필요
     implementation(project(":stream-fix-core:core-service"))
     implementation(project(":stream-fix-commons"))
     implementation(project(":stream-fix-adapters:adapter-http"))
@@ -12,7 +12,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-    implementation("org.springframework.data:spring-data-commons")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.flywaydb:flyway-core")
 

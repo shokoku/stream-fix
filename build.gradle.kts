@@ -10,7 +10,7 @@ plugins {
     id("com.epages.restdocs-api-spec") version Versions.RESTDOCS_API_SPEC apply false
     id("org.asciidoctor.jvm.convert") version Versions.ASCIIDOCTOR_PLUGIN apply false
     id("com.linecorp.build-recipe-plugin") version Versions.LINE_RECIPE_PLUGIN
-    id("com.diffplug.spotless") version "7.0.4"
+    id("com.diffplug.spotless") version Versions.SPOTLESS
 
     kotlin("jvm") version Versions.KOTLIN apply false
     kotlin("kapt") version Versions.KOTLIN apply false
@@ -35,7 +35,6 @@ subprojects {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
@@ -80,7 +79,6 @@ configureByLabels("java") {
         }
 
         dependencies {
-            // Spring Boot BOM에서 관리하지 않는 의존성들만 명시적으로 버전 지정
             dependency("org.apache.commons:commons-lang3:${Versions.APACHE_COMMONS_LANG}")
             dependency("org.apache.commons:commons-collections4:${Versions.APACHE_COMMONS_COLLECTIONS}")
             dependency("com.navercorp.fixturemonkey:fixture-monkey-starter:${Versions.FIXTURE_MONKEY}")
