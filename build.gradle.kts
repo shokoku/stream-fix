@@ -3,19 +3,19 @@ import org.gradle.kotlin.dsl.the
 
 plugins {
     id("java")
-    id("io.spring.dependency-management") version Versions.springDependencyManagementPlugin apply false
-    id("org.springframework.boot") version Versions.springBoot apply false
-    id("io.freefair.lombok") version Versions.lombokPlugin apply false
-    id("com.coditory.integration-test") version Versions.integrationTestPlugin apply false
-    id("com.epages.restdocs-api-spec") version Versions.restdocsApiSpec apply false
-    id("org.asciidoctor.jvm.convert") version Versions.asciidoctorPlugin apply false
-    id("com.linecorp.build-recipe-plugin") version Versions.lineRecipePlugin
+    id("io.spring.dependency-management") version Versions.SPRING_DEPENDENCY_MANAGEMENT_PLUGIN apply false
+    id("org.springframework.boot") version Versions.SPRING_BOOT apply false
+    id("io.freefair.lombok") version Versions.LOMBOK_PLUGIN apply false
+    id("com.coditory.integration-test") version Versions.INTEGRATION_TEST_PLUGIN apply false
+    id("com.epages.restdocs-api-spec") version Versions.RESTDOCS_API_SPEC apply false
+    id("org.asciidoctor.jvm.convert") version Versions.ASCIIDOCTOR_PLUGIN apply false
+    id("com.linecorp.build-recipe-plugin") version Versions.LINE_RECIPE_PLUGIN
     id("com.diffplug.spotless") version "7.0.4"
 
-    kotlin("jvm") version Versions.kotlin apply false
-    kotlin("kapt") version Versions.kotlin apply false
-    kotlin("plugin.spring") version Versions.kotlin apply false
-    kotlin("plugin.jpa") version Versions.kotlin apply false
+    kotlin("jvm") version Versions.KOTLIN apply false
+    kotlin("kapt") version Versions.KOTLIN apply false
+    kotlin("plugin.spring") version Versions.KOTLIN apply false
+    kotlin("plugin.jpa") version Versions.KOTLIN apply false
 }
 
 allprojects {
@@ -75,29 +75,29 @@ configureByLabels("java") {
 
     the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
         imports {
-            mavenBom("org.springframework.boot:spring-boot-dependencies:${Versions.springBoot}")
-            mavenBom("com.google.guava:guava-bom:${Versions.guava}")
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${Versions.SPRING_BOOT}")
+            mavenBom("com.google.guava:guava-bom:${Versions.GUAVA}")
         }
 
         dependencies {
-            dependency("org.apache.commons:commons-lang3:${Versions.apacheCommonsLang}")
-            dependency("org.apache.commons:commons-collections4:${Versions.apacheCommonsCollections}")
-            dependency("com.navercorp.fixturemonkey:fixture-monkey-starter:${Versions.fixtureMonkey}")
-            dependency("org.mapstruct:mapstruct:${Versions.mapstruct}")
-            dependency("org.mapstruct:mapstruct-processor:${Versions.mapstruct}")
-            dependency("com.fasterxml.jackson.core:jackson-databind:${Versions.jacksonCore}")
+            dependency("org.apache.commons:commons-lang3:${Versions.APACHE_COMMONS_LANG}")
+            dependency("org.apache.commons:commons-collections4:${Versions.APACHE_COMMONS_COLLECTIONS}")
+            dependency("com.navercorp.fixturemonkey:fixture-monkey-starter:${Versions.FIXTURE_MONKEY}")
+            dependency("org.mapstruct:mapstruct:${Versions.MAPSTRUCT}")
+            dependency("org.mapstruct:mapstruct-processor:${Versions.MAPSTRUCT}")
+            dependency("com.fasterxml.jackson.core:jackson-databind:${Versions.JACKSON_CORE}")
 
-            dependency("org.junit.jupiter:junit-jupiter-api:${Versions.junit}")
-            dependency("org.junit.jupiter:junit-jupiter-params:${Versions.junit}")
-            dependency("org.junit.jupiter:junit-jupiter-engine:${Versions.junit}")
-            dependency("org.assertj:assertj-core:${Versions.assertjCore}")
-            dependency("org.mockito:mockito-junit-jupiter:${Versions.mockitoCore}")
+            dependency("org.junit.jupiter:junit-jupiter-api:${Versions.JUNIT}")
+            dependency("org.junit.jupiter:junit-jupiter-params:${Versions.JUNIT}")
+            dependency("org.junit.jupiter:junit-jupiter-engine:${Versions.JUNIT}")
+            dependency("org.assertj:assertj-core:${Versions.ASSERTJ_CORE}")
+            dependency("org.mockito:mockito-junit-jupiter:${Versions.MOCKITO_CORE}")
 
-            dependency("com.epages:restdocs-api-spec:${Versions.restdocsApiSpec}")
-            dependency("com.epages:restdocs-api-spec-mockmvc:${Versions.restdocsApiSpec}")
-            dependency("com.epages:restdocs-api-spec-restassured:${Versions.restdocsApiSpec}")
+            dependency("com.epages:restdocs-api-spec:${Versions.RESTDOCS_API_SPEC}")
+            dependency("com.epages:restdocs-api-spec-mockmvc:${Versions.RESTDOCS_API_SPEC}")
+            dependency("com.epages:restdocs-api-spec-restassured:${Versions.RESTDOCS_API_SPEC}")
 
-            dependencySet("io.jsonwebtoken:${Versions.jwt}") {
+            dependencySet("io.jsonwebtoken:${Versions.JWT}") {
                 entry("jjwt-api")
                 entry("jjwt-impl")
                 entry("jjwt-jackson")
@@ -182,13 +182,13 @@ configureByLabels("restdocs") {
 configureByLabels("querydsl") {
     the<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension>().apply {
         imports {
-            mavenBom("com.querydsl:querydsl-bom:${Versions.querydsl}")
+            mavenBom("com.querydsl:querydsl-bom:${Versions.QUERYDSL}")
         }
 
         dependencies {
-            dependency("com.querydsl:querydsl-core:${Versions.querydsl}")
-            dependency("com.querydsl:querydsl-jpa:${Versions.querydsl}")
-            dependency("com.querydsl:querydsl-apt:${Versions.querydsl}")
+            dependency("com.querydsl:querydsl-core:${Versions.QUERYDSL}")
+            dependency("com.querydsl:querydsl-jpa:${Versions.QUERYDSL}")
+            dependency("com.querydsl:querydsl-apt:${Versions.QUERYDSL}")
         }
     }
 
@@ -196,10 +196,10 @@ configureByLabels("querydsl") {
         val implementation by configurations
         val annotationProcessor by configurations
 
-        implementation("com.querydsl:querydsl-jpa:${Versions.querydsl}:jakarta")
-        implementation("com.querydsl:querydsl-core:${Versions.querydsl}")
+        implementation("com.querydsl:querydsl-jpa:${Versions.QUERYDSL}:jakarta")
+        implementation("com.querydsl:querydsl-core:${Versions.QUERYDSL}")
 
-        annotationProcessor("com.querydsl:querydsl-apt:${Versions.querydsl}:jakarta")
+        annotationProcessor("com.querydsl:querydsl-apt:${Versions.QUERYDSL}:jakarta")
         annotationProcessor("jakarta.persistence:jakarta.persistence-api")
         annotationProcessor("jakarta.annotation:jakarta.annotation-api")
     }
