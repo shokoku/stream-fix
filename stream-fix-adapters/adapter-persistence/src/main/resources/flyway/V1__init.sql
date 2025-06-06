@@ -41,6 +41,24 @@ CREATE TABLE `streamfix`.`social_users`
     PRIMARY KEY (SOCIAL_USER_ID)
 );
 
+DROP TABLE IF EXISTS `streamfix`.`user_subscriptions`;
+CREATE TABLE `streamfix`.`user_subscriptions`
+(
+    USER_SUBSCRIPTION_ID VARCHAR(255) NOT NULL COMMENT '사용자 구독 ID',
+    USER_ID              VARCHAR(255) NOT NULL COMMENT '사용자 ID',
+    SUBSCRIPTION_NAME    VARCHAR(255) NOT NULL COMMENT '구독권 이름',
+    START_AT             DATETIME     NOT NULL COMMENT '시작 일시 (yyyy-MM-dd HH:mm:ss)',
+    END_AT               DATETIME     NOT NULL COMMENT '종료 일시 (yyyy-MM-dd HH:mm:ss)',
+    VALID_YN             TINYINT(1) NOT NULL COMMENT '구독권 유효 여부',
+
+    CREATED_AT           DATETIME     NOT NULL COMMENT '생성일자',
+    CREATED_BY           VARCHAR(50)  NOT NULL COMMENT '생성자',
+    MODIFIED_AT          DATETIME     NOT NULL COMMENT '수정일자',
+    MODIFIED_BY          VARCHAR(50)  NOT NULL COMMENT '수정자',
+
+    PRIMARY KEY (USER_SUBSCRIPTION_ID)
+);
+
 DROP TABLE IF EXISTS `streamfix`.`tokens`;
 CREATE TABLE `streamfix`.`tokens`
 (
@@ -75,4 +93,35 @@ CREATE TABLE `streamfix`.`movies`
     MODIFIED_BY VARCHAR(50)  NOT NULL COMMENT '수정자',
 
     PRIMARY KEY (MOVIE_ID)
+);
+
+DROP TABLE IF EXISTS `streamfix`.`user_movie_likes`;
+CREATE TABLE `streamfix`.`user_movie_likes`
+(
+    USER_MOVIE_LIKE_ID VARCHAR(255) NOT NULL COMMENT 'PK',
+    USER_ID            VARCHAR(255) NOT NULL COMMENT '사용자 ID',
+    MOVIE_ID           VARCHAR(255) NOT NULL COMMENT '영화 ID',
+    LIKE_YN            TINYINT(1) COMMENT '좋아요 여부',
+
+    CREATED_AT         DATETIME     NOT NULL COMMENT '생성일자',
+    CREATED_BY         VARCHAR(50)  NOT NULL COMMENT '생성자',
+    MODIFIED_AT        DATETIME     NOT NULL COMMENT '수정일자',
+    MODIFIED_BY        VARCHAR(50)  NOT NULL COMMENT '수정자',
+
+    PRIMARY KEY (USER_MOVIE_LIKE_ID)
+);
+
+DROP TABLE IF EXISTS `streamfix`.`user_movie_downloads`;
+CREATE TABLE `streamfix`.`user_movie_downloads`
+(
+    USER_MOVIE_DOWNLOAD_ID VARCHAR(255) NOT NULL COMMENT 'PK',
+    USER_ID            VARCHAR(255) NOT NULL COMMENT '사용자 ID',
+    MOVIE_ID           VARCHAR(255) NOT NULL COMMENT '영화 ID',
+
+    CREATED_AT         DATETIME     NOT NULL COMMENT '생성일자',
+    CREATED_BY         VARCHAR(50)  NOT NULL COMMENT '생성자',
+    MODIFIED_AT        DATETIME     NOT NULL COMMENT '수정일자',
+    MODIFIED_BY        VARCHAR(50)  NOT NULL COMMENT '수정자',
+
+    PRIMARY KEY (USER_MOVIE_DOWNLOAD_ID)
 );
