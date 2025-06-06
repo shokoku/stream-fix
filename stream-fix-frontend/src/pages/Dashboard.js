@@ -14,7 +14,7 @@ function Dashboard() {
       }
     }).then(response => {
       console.log(response)
-      setMovies(response.data.data.movies)
+      setMovies(response.data.data.movieResponses)
     }).catch(error => {
       console.log(error)
     });

@@ -36,6 +36,20 @@ public class MovieService implements FetchMovieUseCase, InsertMovieUseCase {
   }
 
   @Override
+  public PageableMovieResponse fetchFromDb(int page) {
+    List<StreamFixMovie> streamFixMovies = persistenceMoviePort.fetchBy(page, 10);
+    return new PageableMovieResponse(
+        streamFixMovies.stream()
+            .map(
+                it ->
+                    new MovieResponse(
+                        it.movieName(), it.isAdult(), List.of(), it.overview(), it.releasedAt()))
+            .toList(),
+        page,
+        true);
+  }
+
+  @Override
   public void insert(List<MovieResponse> items) {
     items.forEach(
         it -> {

@@ -12,7 +12,7 @@ function KakaoAuthRedirect() {
       axios.post('http://localhost:8080/api/v1/user/callback', { code })
       .then(response => {
         console.log(response)
-        const token = response.data.data.accessToken;
+        const token = response.data.data;
         localStorage.setItem('token', token);
         navigate('/dashboard');
       })

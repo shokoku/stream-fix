@@ -5,4 +5,6 @@ import com.shokoku.streamfix.movie.response.PageableMovieResponse;
 public interface FetchMovieUseCase {
 
   PageableMovieResponse fetchFromClient(int page);
+
+  PageableMovieResponse fetchFromDb(int page);
 }
