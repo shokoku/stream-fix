@@ -1,6 +1,5 @@
 package com.shokoku.streamfix.entity.user;
 
-
 import com.shokoku.streamfix.audit.MutableBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,8 +43,14 @@ public class UserHistoryEntity extends MutableBaseEntity {
   @Column(name = "REQ_PAYLOAD")
   private String reqPayload;
 
-  public UserHistoryEntity(String userId, String userRole, String clientIp, String reqMethod,
-      String reqUrl, String reqHeader, String reqPayload) {
+  public UserHistoryEntity(
+      String userId,
+      String userRole,
+      String clientIp,
+      String reqMethod,
+      String reqUrl,
+      String reqHeader,
+      String reqPayload) {
     this.userId = userId;
     this.userRole = userRole;
     this.clientIp = clientIp;

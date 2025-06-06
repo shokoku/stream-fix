@@ -14,11 +14,17 @@ public class UserHistoryRepository implements UserHistoryPort {
 
   @Override
   @Transactional
-  public void create(String userId, String userRole, String clientIp, String reqMethod,
-      String reqUrl, String reqHeader, String reqPayload) {
+  public void create(
+      String userId,
+      String userRole,
+      String clientIp,
+      String reqMethod,
+      String reqUrl,
+      String reqHeader,
+      String reqPayload) {
 
-    userHistoryJpaRepository.save(new UserHistoryEntity(
-        userId, userRole, clientIp, reqMethod, reqUrl, reqHeader, reqPayload
-    ));
+    userHistoryJpaRepository.save(
+        new UserHistoryEntity(
+            userId, userRole, clientIp, reqMethod, reqUrl, reqHeader, reqPayload));
   }
 }
