@@ -2,6 +2,8 @@ package com.shokoku.streamfix.repository.user;
 
 import com.shokoku.streamfix.entity.user.SocialUserEntity;
 import com.shokoku.streamfix.entity.user.UserEntity;
+import com.shokoku.streamfix.repository.subscription.UserSubscriptionRepository;
+import com.shokoku.streamfix.subscription.UserSubscription;
 import com.shokoku.streamfix.user.CreateUser;
 import com.shokoku.streamfix.user.FetchUserPort;
 import com.shokoku.streamfix.user.InsertUserPort;
@@ -18,6 +20,7 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
 
   private final UserJpaRepository userJpaRepository;
   private final SocialUserJpaRepository socialUserJpaRepository;
+  private final UserSubscriptionRepository userSubscriptionRepository;
 
   @Override
   @Transactional
@@ -43,11 +46,16 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
     }
 
     SocialUserEntity socialUserEntity = byProviderId.get();
+
+    Optional<UserSubscription> byUserId = userSubscriptionRepository.findByUserId(
+        socialUserEntity.getSocialUserId());
+
     return Optional.of(
         UserPortResponse.builder()
             .providerId(socialUserEntity.getProviderId())
             .provider(socialUserEntity.getProvider())
             .username(socialUserEntity.getUserName())
+            .role(byUserId.orElse(UserSubscription.newSubscription(socialUserEntity.getSocialUserId())).getSubscriptionType().toRole())
             .build());
   }
 
@@ -57,6 +65,9 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
     UserEntity userEntity =
         new UserEntity(user.username(), user.encryptedPassword(), user.email(), user.phone());
     UserEntity save = userJpaRepository.save(userEntity);
+
+    userSubscriptionRepository.create(userEntity.getUserId());
+
     return UserPortResponse.builder()
         .userId(save.getUserId())
         .username(save.getUserName())
@@ -71,6 +82,9 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
   public UserPortResponse createSocialUser(String username, String provider, String providerId) {
     SocialUserEntity socialUserEntity = new SocialUserEntity(username, provider, providerId);
     socialUserJpaRepository.save(socialUserEntity);
+
+    userSubscriptionRepository.create(socialUserEntity.getSocialUserId());
+
     return UserPortResponse.builder()
         .providerId(socialUserEntity.getProviderId())
         .provider(socialUserEntity.getProvider())

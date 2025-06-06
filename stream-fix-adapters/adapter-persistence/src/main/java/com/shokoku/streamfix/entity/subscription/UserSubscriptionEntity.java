@@ -1,5 +1,6 @@
 package com.shokoku.streamfix.entity.subscription;
 
+import com.shokoku.streamfix.audit.MutableBaseEntity;
 import com.shokoku.streamfix.subscription.SubscriptionType;
 import com.shokoku.streamfix.subscription.UserSubscription;
 import jakarta.persistence.Column;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @Table(name = "user_subscriptions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserSubscriptionEntity {
+public class UserSubscriptionEntity extends MutableBaseEntity {
 
   @Id
   @Column(name = "USER_SUBSCRIPTION_ID")
