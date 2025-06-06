@@ -4,6 +4,7 @@ import com.shokoku.streamfix.controller.user.StreamFixApiResponse;
 import com.shokoku.streamfix.filter.JwtTokenProvider;
 import com.shokoku.streamfix.movie.DownloadMovieUseCase;
 import com.shokoku.streamfix.movie.FetchMovieUseCase;
+import com.shokoku.streamfix.movie.LikeMovieUseCase;
 import com.shokoku.streamfix.movie.response.PageableMovieResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ public class MovieController {
 
   private final FetchMovieUseCase fetchMovieUseCase;
   private final DownloadMovieUseCase downloadMovieUseCase;
+  private final LikeMovieUseCase likeMovieUseCase;
   private final JwtTokenProvider jwtTokenProvider;
 
   @GetMapping("/api/v1/movie/client/{page}")
@@ -40,5 +42,13 @@ public class MovieController {
         downloadMovieUseCase.download(
             jwtTokenProvider.getUserId(), jwtTokenProvider.getRole(), movieId);
     return StreamFixApiResponse.ok(download);
+  }
+
+  @PostMapping("/api/v1/movie/{movieId}/like")
+  @PreAuthorize("hasAnyRole('ROLE_FREE', 'ROLE_BRONZE', 'ROLE_SILVER', 'ROLE_GOLD')")
+  public StreamFixApiResponse<String> like(@PathVariable String movieId) {
+    String userId = jwtTokenProvider.getUserId();
+    likeMovieUseCase.like(movieId, userId);
+    return StreamFixApiResponse.ok("");
   }
 }

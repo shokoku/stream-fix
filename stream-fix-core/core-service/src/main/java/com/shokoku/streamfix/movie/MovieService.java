@@ -7,16 +7,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MovieService implements FetchMovieUseCase, InsertMovieUseCase, DownloadMovieUseCase {
+public class MovieService
+    implements FetchMovieUseCase, InsertMovieUseCase, DownloadMovieUseCase, LikeMovieUseCase {
 
   private final TmdbMoviePort tmdbMoviePort;
   private final PersistenceMoviePort persistenceMoviePort;
   private final DownloadMoviePort downloadMoviePort;
+  private final LikeMoviePort likeMoviePort;
   private final List<UserDownloadMovieRoleValidator> validators;
 
   @Override
@@ -85,5 +88,19 @@ public class MovieService implements FetchMovieUseCase, InsertMovieUseCase, Down
     downloadMoviePort.save(UserMovieDownload.newDownload(userId, movieId));
 
     return by.movieName();
+  }
+
+  @Override
+  public void like(String userId, String movieId) {
+    Optional<UserMovieLike> byUserIdAndMovieId =
+        likeMoviePort.findByUserIdAndMovieId(userId, movieId);
+
+    if (byUserIdAndMovieId.isEmpty()) {
+      likeMoviePort.save(UserMovieLike.newLike(userId, movieId));
+    }
+
+    UserMovieLike userMovieLike = byUserIdAndMovieId.get();
+    userMovieLike.like();
+    likeMoviePort.save(userMovieLike);
   }
 }
