@@ -14,7 +14,6 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://maven.restlet.com") }
     maven { url = uri("https://jitpack.io") }
 }
 
@@ -25,28 +24,33 @@ configure<JavaPluginExtension> {
 
 configure<DependencyManagementExtension> {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:3.2.5")
-        mavenBom("com.google.guava:guava-bom:33.1.0-jre")
-    }
-    dependencies {
-        dependency("org.apache.commons:commons-lang3:3.14.0")
-        dependency("org.apache.commons:commons-collections4:4.4")
-        dependency("org.mapstruct:mapstruct:1.5.5.Final")
-        dependency("org.mapstruct:mapstruct-processor:1.5.5.Final")
-        dependencySet("io.jsonwebtoken:0.12.5") {
-            entry("jjwt-api")
-            entry("jjwt-impl")
-            entry("jjwt-jackson")
-        }
+        mavenBom("org.springframework.boot:spring-boot-dependencies:_")
+        mavenBom("com.google.guava:guava-bom:_")
+        mavenBom("com.querydsl:querydsl-bom:_")
     }
 }
 
 dependencies {
-    implementation("org.apache.commons:commons-lang3")
-    implementation("org.apache.commons:commons-collections4")
-    implementation("org.mapstruct:mapstruct")
+    implementation("org.springframework.boot:spring-boot-starter-web:_")
+    implementation("org.springframework.boot:spring-boot-starter-validation:_")
+    implementation("org.springframework.boot:spring-boot-starter-security:_")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client:_")
+    implementation("org.springframework.boot:spring-boot-starter-aop:_")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:_")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:_")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis:_")
+    implementation("org.springframework.boot:spring-boot-starter-batch:_")
+    
+    implementation("org.apache.commons:commons-lang3:_")
+    implementation("org.apache.commons:commons-collections4:_")
+    implementation("org.mapstruct:mapstruct:_")
+    implementation("org.flywaydb:flyway-core:_")
+    implementation("org.flywaydb:flyway-mysql:_")
+    implementation("io.jsonwebtoken:jjwt-api:_")
+    implementation("io.jsonwebtoken:jjwt-impl:_")
+    implementation("io.jsonwebtoken:jjwt-jackson:_")
 
-    annotationProcessor("org.mapstruct:mapstruct-processor")
+    annotationProcessor("org.mapstruct:mapstruct-processor:_")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 }

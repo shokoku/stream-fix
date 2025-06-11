@@ -8,10 +8,10 @@ dependencies {
     implementation(project(":stream-fix-core:core-port"))
     implementation(project(":stream-fix-core:core-domain"))
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation(Spring.boot.data.jpa)
 
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-mysql")
+    implementation("org.flywaydb:flyway-core:_")
+    implementation("org.flywaydb:flyway-mysql:_")
 
-    runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("com.mysql:mysql-connector-j:_")
 }

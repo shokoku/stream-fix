@@ -9,6 +9,6 @@ dependencies {
     implementation(project(":stream-fix-commons"))
 
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation(Spring.boot.web)
 
 }

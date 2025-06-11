@@ -1,8 +1,6 @@
 plugins {
     id("custom.java")
     id("custom.boot")
-    id("custom.asciidoctor")
-    id("custom.restdocs")
 }
 
 dependencies {
