@@ -20,7 +20,6 @@ dependencies {
     implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.flywaydb:flyway-core")
 }
 
 val appMainClassName = "com.shokoku.streamfix.StreamFixApplication"

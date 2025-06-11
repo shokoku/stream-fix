@@ -7,7 +7,6 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23")
     implementation("org.springframework.boot:spring-boot-gradle-plugin:3.2.5")

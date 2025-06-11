@@ -11,8 +11,6 @@ dependencies{
     implementation(project(":stream-fix-adapters:adapter-redis"))
 
     implementation("org.springframework.boot:spring-boot-starter-batch")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-
+    
     runtimeOnly(project(":stream-fix-core:core-service"))
-
 }
