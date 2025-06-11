@@ -1,5 +1,10 @@
+plugins {
+    id("custom.java")
+    id("custom.boot")
+}
+
 dependencies {
-    implementation(project(":stream-fix-core:core-usecase")) // UseCase 인터페이스들 필요
+    implementation(project(":stream-fix-core:core-usecase"))
     implementation(project(":stream-fix-core:core-service"))
     implementation(project(":stream-fix-commons"))
     implementation(project(":stream-fix-adapters:adapter-http"))
@@ -13,16 +18,6 @@ dependencies {
     implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.flywaydb:flyway-core")
-
-    integrationImplementation("org.springframework.boot:spring-boot-starter-test")
-    integrationImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
-    integrationImplementation("io.rest-assured:spring-mock-mvc")
-    integrationRuntimeOnly("com.h2database:h2")
-
-    integrationImplementation("com.epages:restdocs-api-spec-mockmvc")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 val appMainClassName = "com.shokoku.streamfix.StreamFixApplication"
