@@ -1,6 +1,8 @@
 package com.shokoku.streamfix.aspect;
 
 import com.shokoku.streamfix.annotaion.PasswordEncryption;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -9,9 +11,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
 
 @Aspect
 @Component

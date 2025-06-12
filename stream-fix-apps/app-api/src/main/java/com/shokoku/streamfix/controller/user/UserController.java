@@ -10,6 +10,7 @@ import com.shokoku.streamfix.user.RegisterUserUseCase;
 import com.shokoku.streamfix.user.command.UserRegisterCommand;
 import com.shokoku.streamfix.user.response.UserRegisterResponse;
 import com.shokoku.streamfix.user.response.UserResponse;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,8 +19,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

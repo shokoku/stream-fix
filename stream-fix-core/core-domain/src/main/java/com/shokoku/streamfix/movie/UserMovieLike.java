@@ -1,9 +1,8 @@
 package com.shokoku.streamfix.movie;
 
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.UUID;
 
 @Getter
 @Builder

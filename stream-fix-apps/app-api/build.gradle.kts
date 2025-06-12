@@ -7,6 +7,8 @@ plugins {
     id("custom.jwt")
     id("custom.mapstruct")
     id("custom.utils")
+    id("custom.test")
+    id("custom.spotless")
 }
 
 dependencies {

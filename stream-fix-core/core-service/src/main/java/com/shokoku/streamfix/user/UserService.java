@@ -5,10 +5,9 @@ import com.shokoku.streamfix.exception.UserException.UserDoesNotExistException;
 import com.shokoku.streamfix.user.command.UserRegisterCommand;
 import com.shokoku.streamfix.user.response.UserRegisterResponse;
 import com.shokoku.streamfix.user.response.UserResponse;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
