@@ -3,10 +3,9 @@ package com.shokoku.streamfix.repository.sample;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.shokoku.streamfix.entity.sample.QSampleEntity;
 import com.shokoku.streamfix.entity.sample.SampleEntity;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor

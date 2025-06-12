@@ -5,11 +5,10 @@ import com.shokoku.streamfix.subscription.FetchUserSubscriptionPort;
 import com.shokoku.streamfix.subscription.InsertUserSubscriptionPort;
 import com.shokoku.streamfix.subscription.UpdateUserSubscriptionPort;
 import com.shokoku.streamfix.subscription.UserSubscription;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor

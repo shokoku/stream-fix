@@ -1,13 +1,12 @@
 package com.shokoku.streamfix.repository.movie;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import static com.shokoku.streamfix.entity.movie.QUserMovieDownloadEntity.userMovieDownloadEntity;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-
-import static com.shokoku.streamfix.entity.movie.QUserMovieDownloadEntity.userMovieDownloadEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor

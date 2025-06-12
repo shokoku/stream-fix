@@ -1,13 +1,12 @@
 package com.shokoku.streamfix.repository.token;
 
+import static com.shokoku.streamfix.entity.token.QTokenEntity.*;
+
 import com.querydsl.jpa.JPQLQueryFactory;
 import com.shokoku.streamfix.entity.token.TokenEntity;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
-
-import static com.shokoku.streamfix.entity.token.QTokenEntity.*;
 
 @Repository
 @RequiredArgsConstructor

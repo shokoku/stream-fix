@@ -3,13 +3,12 @@ package com.shokoku.streamfix.repository.movie;
 import com.shokoku.streamfix.entity.movie.MovieEntity;
 import com.shokoku.streamfix.movie.PersistenceMoviePort;
 import com.shokoku.streamfix.movie.StreamFixMovie;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor

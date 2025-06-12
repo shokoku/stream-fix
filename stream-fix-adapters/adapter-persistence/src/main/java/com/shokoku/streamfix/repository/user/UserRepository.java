@@ -8,11 +8,10 @@ import com.shokoku.streamfix.user.CreateUser;
 import com.shokoku.streamfix.user.FetchUserPort;
 import com.shokoku.streamfix.user.InsertUserPort;
 import com.shokoku.streamfix.user.UserPortResponse;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor

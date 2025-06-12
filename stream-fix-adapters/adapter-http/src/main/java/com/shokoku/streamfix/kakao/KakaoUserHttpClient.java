@@ -2,6 +2,7 @@ package com.shokoku.streamfix.kakao;
 
 import com.shokoku.streamfix.user.KakaoUserPort;
 import com.shokoku.streamfix.user.UserPortResponse;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,8 +10,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor

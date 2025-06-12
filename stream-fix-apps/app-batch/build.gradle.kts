@@ -3,6 +3,7 @@ plugins {
     id("custom.library")
     id("custom.spring")
     id("custom.batch")
+    id("custom.spotless")
 }
 
 dependencies {

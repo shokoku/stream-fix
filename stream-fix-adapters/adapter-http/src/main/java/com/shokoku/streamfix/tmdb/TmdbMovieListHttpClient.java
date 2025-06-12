@@ -6,13 +6,12 @@ import com.shokoku.streamfix.client.TmdbHttpClient;
 import com.shokoku.streamfix.movie.TmdbMovie;
 import com.shokoku.streamfix.movie.TmdbMoviePort;
 import com.shokoku.streamfix.movie.TmdbPageableMovies;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
