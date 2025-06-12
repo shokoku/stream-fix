@@ -2,11 +2,10 @@ package com.shokoku.streamfix.repository.sample;
 
 import com.shokoku.streamfix.entity.sample.SampleEntity;
 import com.shokoku.streamfix.sample.SamplePersistencePort;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor

@@ -1,10 +1,9 @@
 package com.shokoku.streamfix.repository;
 
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.time.Duration;
 
 @Repository
 @RequiredArgsConstructor

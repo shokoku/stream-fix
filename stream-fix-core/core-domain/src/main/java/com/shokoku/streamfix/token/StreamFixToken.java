@@ -1,8 +1,7 @@
 package com.shokoku.streamfix.token;
 
-import lombok.Builder;
-
 import java.time.LocalDateTime;
+import lombok.Builder;
 
 @Builder
 public record StreamFixToken(

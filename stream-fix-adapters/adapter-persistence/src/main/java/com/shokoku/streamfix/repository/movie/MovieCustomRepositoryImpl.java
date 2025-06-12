@@ -1,17 +1,16 @@
 package com.shokoku.streamfix.repository.movie;
 
+import static com.shokoku.streamfix.entity.movie.QMovieEntity.*;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.shokoku.streamfix.entity.movie.MovieEntity;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
-
-import static com.shokoku.streamfix.entity.movie.QMovieEntity.*;
 
 @Repository
 @RequiredArgsConstructor

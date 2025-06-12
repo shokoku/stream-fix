@@ -4,6 +4,7 @@ plugins {
     id("custom.spring")
     id("custom.data")
     id("custom.querydsl")
+    id("custom.spotless")
 }
 
 dependencies {

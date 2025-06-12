@@ -11,4 +11,5 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-gradle-plugin:_")
     implementation("io.spring.gradle:dependency-management-plugin:_")
     implementation("io.freefair.gradle:lombok-plugin:_")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:_")
 }

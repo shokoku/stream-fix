@@ -5,6 +5,8 @@ plugins {
     id("custom.data")
     id("custom.utils")
     id("custom.jwt")
+    id("custom.test")
+    id("custom.spotless")
 }
 
 dependencies {
@@ -12,6 +14,6 @@ dependencies {
     implementation(project(":stream-fix-core:core-port"))
     implementation(project(":stream-fix-core:core-usecase"))
     implementation(project(":stream-fix-commons"))
-    
+
     implementation("org.springframework.boot:spring-boot-starter-aop:_")
 }

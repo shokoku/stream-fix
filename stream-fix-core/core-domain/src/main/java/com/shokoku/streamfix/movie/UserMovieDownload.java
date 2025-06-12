@@ -1,8 +1,7 @@
 package com.shokoku.streamfix.movie;
 
-import lombok.Builder;
-
 import java.util.UUID;
+import lombok.Builder;
 
 @Builder
 public record UserMovieDownload(String userMovieDownloadId, String userId, String movieId) {

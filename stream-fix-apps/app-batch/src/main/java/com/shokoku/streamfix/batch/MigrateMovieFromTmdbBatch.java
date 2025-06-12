@@ -3,6 +3,7 @@ package com.shokoku.streamfix.batch;
 import com.shokoku.streamfix.movie.FetchMovieUseCase;
 import com.shokoku.streamfix.movie.InsertMovieUseCase;
 import com.shokoku.streamfix.movie.response.MovieResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -14,8 +15,6 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import java.util.List;
 
 @Slf4j
 @Configuration

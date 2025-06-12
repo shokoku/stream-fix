@@ -1,8 +1,7 @@
 package com.shokoku.streamfix.authcation;
 
-import org.springframework.stereotype.Component;
-
 import java.util.Optional;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AuthenticationHolderImpl implements AuthenticationHolder, RequestByProvider {

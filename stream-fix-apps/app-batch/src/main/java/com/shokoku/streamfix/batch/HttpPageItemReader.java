@@ -3,10 +3,9 @@ package com.shokoku.streamfix.batch;
 import com.shokoku.streamfix.movie.FetchMovieUseCase;
 import com.shokoku.streamfix.movie.response.MovieResponse;
 import com.shokoku.streamfix.movie.response.PageableMovieResponse;
-import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
-
 import java.util.LinkedList;
 import java.util.List;
+import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
 
 public class HttpPageItemReader extends AbstractItemCountingItemStreamItemReader<MovieResponse> {
 
