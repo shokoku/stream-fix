@@ -1,9 +1,11 @@
 plugins {
     id("custom.java")
     id("custom.library")
+    id("custom.spring")
+    id("custom.redis")
 }
 
 dependencies {
     implementation(project(":stream-fix-core:core-port"))
-    implementation(Spring.boot.data.redis)
+    implementation(project(":stream-fix-core:core-domain"))
 }
