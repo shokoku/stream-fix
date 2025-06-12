@@ -3,7 +3,6 @@ plugins {
     id("custom.library")
 }
 
-dependencies{
+dependencies {
     implementation(project(":stream-fix-core:core-domain"))
-
 }

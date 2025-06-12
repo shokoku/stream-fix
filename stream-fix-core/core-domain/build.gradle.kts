@@ -3,5 +3,5 @@ plugins {
     id("custom.library")
 }
 
-dependencies{
+dependencies {
 }
