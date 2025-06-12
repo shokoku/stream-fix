@@ -5,5 +5,4 @@ plugins {
 
 
 dependencies{
-    testImplementation(Spring.boot.test)
 }
