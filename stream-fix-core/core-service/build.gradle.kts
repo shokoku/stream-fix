@@ -1,12 +1,7 @@
 plugins {
-    id("custom.java")
-    id("custom.library")
-    id("custom.spring")
-    id("custom.data")
-    id("custom.utils")
-    id("custom.jwt")
-    id("custom.test")
-    id("custom.spotless")
+    id("custom.java-conventions")
+    id("custom.spring-conventions")
+    id("custom.library-conventions")
 }
 
 dependencies {
@@ -15,5 +10,18 @@ dependencies {
     implementation(project(":stream-fix-core:core-usecase"))
     implementation(project(":stream-fix-commons"))
 
+    implementation(Spring.boot.data.jpa)
+
     implementation("org.springframework.boot:spring-boot-starter-aop:_")
+
+    implementation("io.jsonwebtoken:jjwt-api:_")
+    implementation("io.jsonwebtoken:jjwt-impl:_")
+    implementation("io.jsonwebtoken:jjwt-jackson:_")
+
+    implementation("org.apache.commons:commons-lang3:_")
+    implementation("org.apache.commons:commons-collections4:_")
+}
+
+tasks.getByName<Jar>("bootJar") {
+    enabled = false
 }

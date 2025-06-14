@@ -1,14 +1,6 @@
 plugins {
-    id("custom.java")
-    id("custom.boot")
-    id("custom.spring")
-    id("custom.web")
-    id("custom.security")
-    id("custom.jwt")
-    id("custom.mapstruct")
-    id("custom.utils")
-    id("custom.test")
-    id("custom.spotless")
+    id("custom.java-conventions")
+    id("custom.spring-conventions")
 }
 
 dependencies {
@@ -19,10 +11,12 @@ dependencies {
     implementation(project(":stream-fix-adapters:adapter-persistence"))
     implementation(project(":stream-fix-adapters:adapter-redis"))
 
-    // API 전용 의존성
-    implementation("org.springframework.boot:spring-boot-starter-actuator:_")
-    implementation("org.springframework.boot:spring-boot-starter-aop:_")
-    implementation("org.springframework.security:spring-security-oauth2-client:_")
+    implementation(Spring.boot.web)
+    implementation(Spring.boot.security)
+
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.apache.commons:commons-lang3:_")
+    implementation("org.apache.commons:commons-collections4:_")
 }
 
 val appMainClassName = "com.shokoku.streamfix.StreamFixApplication"
