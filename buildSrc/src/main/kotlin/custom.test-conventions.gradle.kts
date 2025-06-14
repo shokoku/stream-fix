@@ -1,6 +1,9 @@
+import gradle.kotlin.dsl.accessors._b6894e0511bd903116b8270f6e7db3de.jacocoTestReport
+
 plugins {
     java
     idea
+    jacoco
 }
 
 repositories {
@@ -19,6 +22,19 @@ tasks.test {
     }
 
     maxHeapSize = "2g"
+    
+    // Jacoco 설정
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
+    }
 }
 
 dependencies {

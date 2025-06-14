@@ -1,6 +1,7 @@
 plugins {
     id("custom.java-conventions")
     id("custom.library-conventions")
+    id("custom.test-conventions")
 }
 
 dependencies {
