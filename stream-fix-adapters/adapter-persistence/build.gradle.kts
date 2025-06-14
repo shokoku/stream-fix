@@ -10,16 +10,16 @@ dependencies {
 
     implementation(Spring.boot.data.jpa)
 
-    implementation("org.flywaydb:flyway-core:_")
-    implementation("org.flywaydb:flyway-mysql:_")
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-mysql")
+    runtimeOnly("com.mysql:mysql-connector-j")
+
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+
     implementation("com.querydsl:querydsl-jpa:_:jakarta")
     implementation("com.querydsl:querydsl-core:_")
-
     annotationProcessor("com.querydsl:querydsl-apt:_:jakarta")
-    annotationProcessor("jakarta.persistence:jakarta.persistence-api:_")
-    annotationProcessor("jakarta.annotation:jakarta.annotation-api:_")
-
-    runtimeOnly("com.mysql:mysql-connector-j:_")
 }
 tasks.getByName<Jar>("bootJar") {
     enabled = false

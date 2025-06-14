@@ -15,6 +15,7 @@ dependencies {
     implementation(Spring.boot.security)
 
     implementation("org.springframework.boot:spring-boot-starter-aop")
+
     implementation("org.apache.commons:commons-lang3:_")
     implementation("org.apache.commons:commons-collections4:_")
 }

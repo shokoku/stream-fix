@@ -12,12 +12,11 @@ dependencies {
 
     implementation(Spring.boot.data.jpa)
 
-    implementation("org.springframework.boot:spring-boot-starter-aop:_")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 
     implementation("io.jsonwebtoken:jjwt-api:_")
     implementation("io.jsonwebtoken:jjwt-impl:_")
     implementation("io.jsonwebtoken:jjwt-jackson:_")
-
     implementation("org.apache.commons:commons-lang3:_")
     implementation("org.apache.commons:commons-collections4:_")
 }
