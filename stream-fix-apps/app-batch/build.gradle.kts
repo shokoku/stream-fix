@@ -1,9 +1,6 @@
 plugins {
-    id("custom.java")
-    id("custom.library")
-    id("custom.spring")
-    id("custom.batch")
-    id("custom.spotless")
+    id("custom.java-conventions")
+    id("custom.spring-conventions")
 }
 
 dependencies {
@@ -12,6 +9,8 @@ dependencies {
     implementation(project(":stream-fix-commons"))
     implementation(project(":stream-fix-adapters:adapter-persistence"))
     implementation(project(":stream-fix-adapters:adapter-redis"))
+
+    implementation(Spring.boot.batch)
 
     runtimeOnly(project(":stream-fix-core:core-service"))
 }

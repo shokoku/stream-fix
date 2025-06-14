@@ -1,7 +1,6 @@
 plugins {
-    id("custom.java")
-    id("custom.library")
-    id("custom.spotless")
+    id("custom.java-conventions")
+    id("custom.library-conventions")
 }
 
 dependencies {
