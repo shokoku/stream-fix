@@ -35,6 +35,10 @@ public class TokenService implements FetchTokenUseCase, CreateTokenUseCase, Upda
     String accessToken = getToken(userId, Duration.ofHours(3));
     String refreshToken = getToken(userId, Duration.ofHours(24));
 
+    if (userId == null || userId.isBlank()) {
+      throw new IllegalArgumentException("userId is null");
+    }
+
     TokenPortResponse tokenPortResponse = insertTokenPort.create(userId, accessToken, refreshToken);
     return TokenResponse.builder()
         .refreshToken(tokenPortResponse.refreshToken())
