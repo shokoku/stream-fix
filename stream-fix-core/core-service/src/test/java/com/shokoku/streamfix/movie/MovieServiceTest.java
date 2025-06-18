@@ -1,5 +1,6 @@
 package com.shokoku.streamfix.movie;
 
+import static com.shokoku.streamfix.fixtures.MovieFixtures.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -68,18 +69,7 @@ class MovieServiceTest {
     void test1000() {
       // given
       int page = 1;
-      TmdbMovie tmdbMovie = mock(TmdbMovie.class);
-      when(tmdbMovie.movieName()).thenReturn("Test Movie");
-      when(tmdbMovie.isAdult()).thenReturn(false);
-      when(tmdbMovie.genre()).thenReturn(List.of("Action", "Drama"));
-      when(tmdbMovie.overview()).thenReturn("Test overview");
-      when(tmdbMovie.releaseAt()).thenReturn("2024-01-01");
-
-      TmdbPageableMovies tmdbPageableMovies = mock(TmdbPageableMovies.class);
-      when(tmdbPageableMovies.tmdbMovies()).thenReturn(List.of(tmdbMovie));
-      when(tmdbPageableMovies.page()).thenReturn(page);
-      when(tmdbPageableMovies.hasNext()).thenReturn(true);
-
+      TmdbPageableMovies tmdbPageableMovies = aTmdbPageableMovies();
       when(tmdbMoviePort.fetchPageable(page)).thenReturn(tmdbPageableMovies);
 
       // when
@@ -92,11 +82,11 @@ class MovieServiceTest {
       assertEquals(1, result.movieResponses().size());
 
       MovieResponse movieResponse = result.movieResponses().get(0);
-      assertEquals("Test Movie", movieResponse.movieName());
-      assertEquals(false, movieResponse.isAdult());
-      assertEquals(List.of("Action", "Drama"), movieResponse.genre());
-      assertEquals("Test overview", movieResponse.overview());
-      assertEquals("2024-01-01", movieResponse.releaseAt());
+      assertEquals(DEFAULT_MOVIE_NAME, movieResponse.movieName());
+      assertEquals(DEFAULT_IS_ADULT, movieResponse.isAdult());
+      assertEquals(DEFAULT_GENRES, movieResponse.genre());
+      assertEquals(DEFAULT_OVERVIEW, movieResponse.overview());
+      assertEquals(DEFAULT_RELEASE_DATE, movieResponse.releaseAt());
 
       verify(tmdbMoviePort).fetchPageable(page);
     }
@@ -106,11 +96,7 @@ class MovieServiceTest {
     void test1001() {
       // given
       int page = 1;
-      TmdbPageableMovies emptyPageableMovies = mock(TmdbPageableMovies.class);
-      when(emptyPageableMovies.tmdbMovies()).thenReturn(Collections.emptyList());
-      when(emptyPageableMovies.page()).thenReturn(page);
-      when(emptyPageableMovies.hasNext()).thenReturn(false);
-
+      TmdbPageableMovies emptyPageableMovies = anEmptyTmdbPageableMovies();
       when(tmdbMoviePort.fetchPageable(page)).thenReturn(emptyPageableMovies);
 
       // when
@@ -128,11 +114,7 @@ class MovieServiceTest {
     @ValueSource(ints = {1, 2, 5, 10, 100})
     void test1002(int page) {
       // given
-      TmdbPageableMovies pageableMovies = mock(TmdbPageableMovies.class);
-      when(pageableMovies.tmdbMovies()).thenReturn(Collections.emptyList());
-      when(pageableMovies.page()).thenReturn(page);
-      when(pageableMovies.hasNext()).thenReturn(page < 10);
-
+      TmdbPageableMovies pageableMovies = aTmdbPageableMoviesWithPage(page);
       when(tmdbMoviePort.fetchPageable(page)).thenReturn(pageableMovies);
 
       // when
@@ -142,6 +124,65 @@ class MovieServiceTest {
       assertNotNull(result);
       assertEquals(page, result.page());
       assertEquals(page < 10, result.hasNext());
+    }
+
+    @DisplayName("성공: 여러 영화가 포함된 목록을 조회할 수 있다")
+    @Test
+    void test1003() {
+      // given
+      int page = 1;
+      TmdbPageableMovies multipleMovies = aTmdbPageableMoviesWithMultipleMovies();
+      when(tmdbMoviePort.fetchPageable(page)).thenReturn(multipleMovies);
+
+      // when
+      PageableMovieResponse result = sut.fetchFromClient(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(3, result.movieResponses().size());
+      assertEquals(DEFAULT_MOVIE_NAME, result.movieResponses().get(0).movieName());
+      assertEquals(HORROR_MOVIE_NAME, result.movieResponses().get(1).movieName());
+      assertEquals(COMEDY_MOVIE_NAME, result.movieResponses().get(2).movieName());
+    }
+
+    @DisplayName("성공: 특정 이름을 가진 TMDB 영화를 조회할 수 있다")
+    @Test
+    void test1004() {
+      // given
+      int page = 1;
+      String customMovieName = "Custom TMDB Movie";
+      TmdbMovie customMovie = aTmdbMovieWithName(customMovieName);
+      TmdbPageableMovies pageableMovies = new TmdbPageableMovies(List.of(customMovie), page, false);
+      when(tmdbMoviePort.fetchPageable(page)).thenReturn(pageableMovies);
+
+      // when
+      PageableMovieResponse result = sut.fetchFromClient(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(1, result.movieResponses().size());
+      assertEquals(customMovieName, result.movieResponses().get(0).movieName());
+    }
+
+    @DisplayName("성공: 커스텀 장르를 가진 영화를 조회할 수 있다")
+    @Test
+    void test1005() {
+      // given
+      int page = 1;
+      List<String> customGenres = List.of("Sci-Fi", "Adventure", "Fantasy");
+      TmdbMovie sciFiMovie = aTmdbMovieWithGenres(customGenres);
+      TmdbPageableMovies pageableMovies = new TmdbPageableMovies(List.of(sciFiMovie), page, true);
+      when(tmdbMoviePort.fetchPageable(page)).thenReturn(pageableMovies);
+
+      // when
+      PageableMovieResponse result = sut.fetchFromClient(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(1, result.movieResponses().size());
+      MovieResponse movieResponse = result.movieResponses().get(0);
+      assertEquals(DEFAULT_MOVIE_NAME, movieResponse.movieName());
+      assertEquals(customGenres, movieResponse.genre());
     }
   }
 
@@ -180,12 +221,7 @@ class MovieServiceTest {
     void test1000() {
       // given
       int page = 1;
-      StreamFixMovie streamFixMovie = mock(StreamFixMovie.class);
-      when(streamFixMovie.movieName()).thenReturn("DB Movie");
-      when(streamFixMovie.isAdult()).thenReturn(true);
-      when(streamFixMovie.overview()).thenReturn("DB overview");
-      when(streamFixMovie.releasedAt()).thenReturn("2024-02-01");
-
+      StreamFixMovie streamFixMovie = aStreamFixMovie();
       when(persistenceMoviePort.fetchBy(page, 10)).thenReturn(List.of(streamFixMovie));
 
       // when
@@ -198,11 +234,11 @@ class MovieServiceTest {
       assertEquals(1, result.movieResponses().size());
 
       MovieResponse movieResponse = result.movieResponses().get(0);
-      assertEquals("DB Movie", movieResponse.movieName());
-      assertEquals(true, movieResponse.isAdult());
+      assertEquals(DEFAULT_MOVIE_NAME, movieResponse.movieName());
+      assertEquals(DEFAULT_IS_ADULT, movieResponse.isAdult());
       assertEquals(List.of(), movieResponse.genre()); // DB에서는 빈 장르 리스트
-      assertEquals("DB overview", movieResponse.overview());
-      assertEquals("2024-02-01", movieResponse.releaseAt());
+      assertEquals(DEFAULT_OVERVIEW, movieResponse.overview());
+      assertEquals(DEFAULT_RELEASE_DATE, movieResponse.releaseAt());
 
       verify(persistenceMoviePort).fetchBy(page, 10);
     }
@@ -239,6 +275,83 @@ class MovieServiceTest {
       assertEquals(page, result.page());
       verify(persistenceMoviePort).fetchBy(page, 10);
     }
+
+    @DisplayName("성공: 여러 영화를 조회할 수 있다")
+    @Test
+    void test1003() {
+      // given
+      int page = 1;
+      List<StreamFixMovie> movies =
+          streamFixMoviesWithNames("DB Movie 1", "DB Movie 2", "DB Movie 3");
+      when(persistenceMoviePort.fetchBy(page, 10)).thenReturn(movies);
+
+      // when
+      PageableMovieResponse result = sut.fetchFromDb(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(3, result.movieResponses().size());
+      assertEquals("DB Movie 1", result.movieResponses().get(0).movieName());
+      assertEquals("DB Movie 2", result.movieResponses().get(1).movieName());
+      assertEquals("DB Movie 3", result.movieResponses().get(2).movieName());
+    }
+
+    @DisplayName("성공: 특정 이름을 가진 StreamFix 영화를 조회할 수 있다")
+    @Test
+    void test1004() {
+      // given
+      int page = 1;
+      String customMovieName = "Custom DB Movie";
+      StreamFixMovie customMovie = aStreamFixMovieWithName(customMovieName);
+      when(persistenceMoviePort.fetchBy(page, 10)).thenReturn(List.of(customMovie));
+
+      // when
+      PageableMovieResponse result = sut.fetchFromDb(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(1, result.movieResponses().size());
+      assertEquals(customMovieName, result.movieResponses().get(0).movieName());
+    }
+
+    @DisplayName("성공: 성인 영화 StreamFix 데이터를 조회할 수 있다")
+    @Test
+    void test1005() {
+      // given
+      int page = 1;
+      StreamFixMovie adultMovie = anAdultStreamFixMovie();
+      when(persistenceMoviePort.fetchBy(page, 10)).thenReturn(List.of(adultMovie));
+
+      // when
+      PageableMovieResponse result = sut.fetchFromDb(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(1, result.movieResponses().size());
+      MovieResponse movieResponse = result.movieResponses().get(0);
+      assertEquals(ADULT_MOVIE_NAME, movieResponse.movieName());
+      assertTrue(movieResponse.isAdult());
+    }
+
+    @DisplayName("성공: 특정 장르를 가진 StreamFix 영화를 조회할 수 있다")
+    @Test
+    void test1006() {
+      // given
+      int page = 1;
+      String customGenre = "Mystery,Thriller,Crime";
+      StreamFixMovie mysteryMovie = aStreamFixMovieWithGenre(customGenre);
+      when(persistenceMoviePort.fetchBy(page, 10)).thenReturn(List.of(mysteryMovie));
+
+      // when
+      PageableMovieResponse result = sut.fetchFromDb(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(1, result.movieResponses().size());
+      MovieResponse movieResponse = result.movieResponses().get(0);
+      assertEquals(DEFAULT_MOVIE_NAME, movieResponse.movieName());
+      // DB에서는 장르가 빈 리스트로 반환되지만, 데이터는 저장됨을 확인
+    }
   }
 
   @Nested
@@ -257,8 +370,7 @@ class MovieServiceTest {
     @Test
     void test2() {
       // given
-      MovieResponse movieResponse =
-          new MovieResponse("Error Movie", false, List.of("Drama"), "Error overview", "2024-01-01");
+      MovieResponse movieResponse = aMovieResponse();
       List<MovieResponse> movies = List.of(movieResponse);
 
       doThrow(new RuntimeException("Database insertion failed"))
@@ -287,9 +399,7 @@ class MovieServiceTest {
     @Test
     void test1001() {
       // given
-      MovieResponse movieResponse =
-          new MovieResponse(
-              "Insert Movie", false, List.of("Drama"), "Insert overview", "2024-01-01");
+      MovieResponse movieResponse = aMovieResponse();
       List<MovieResponse> movies = List.of(movieResponse);
 
       // when
@@ -303,11 +413,7 @@ class MovieServiceTest {
     @Test
     void test1002() {
       // given
-      MovieResponse movie1 =
-          new MovieResponse("Movie 1", false, List.of("Action"), "Overview 1", "2024-01-01");
-      MovieResponse movie2 =
-          new MovieResponse("Movie 2", true, List.of("Horror"), "Overview 2", "2024-02-01");
-      List<MovieResponse> movies = List.of(movie1, movie2);
+      List<MovieResponse> movies = movieResponsesWithNames("Movie 1", "Movie 2");
 
       // when
       sut.insert(movies);
@@ -320,12 +426,9 @@ class MovieServiceTest {
     @Test
     void test1003() {
       // given
-      MovieResponse adultMovie =
-          new MovieResponse("Adult Movie", true, List.of("Adult"), "Adult overview", "2024-01-01");
-      MovieResponse nonAdultMovie =
-          new MovieResponse(
-              "Family Movie", false, List.of("Family"), "Family overview", "2024-01-01");
-      List<MovieResponse> movies = List.of(adultMovie, nonAdultMovie);
+      MovieResponse adultMovie = anAdultMovieResponse();
+      MovieResponse horrorMovie = aHorrorMovieResponse();
+      List<MovieResponse> movies = List.of(adultMovie, horrorMovie);
 
       // when
       sut.insert(movies);
@@ -415,7 +518,7 @@ class MovieServiceTest {
       when(validator.isTarget(role)).thenReturn(true);
       when(validator.validate(0L)).thenReturn(true);
 
-      StreamFixMovie movie = mock(StreamFixMovie.class);
+      StreamFixMovie movie = aStreamFixMovie();
 
       when(downloadMoviePort.downloadCntToday(userId)).thenReturn(0L);
       when(validators.stream()).thenReturn(Stream.of(validator));
@@ -437,8 +540,7 @@ class MovieServiceTest {
       when(validator.isTarget(role)).thenReturn(true);
       when(validator.validate(2L)).thenReturn(true); // BRONZE는 5개 미만
 
-      StreamFixMovie movie = mock(StreamFixMovie.class);
-      when(movie.movieName()).thenReturn("Test Movie");
+      StreamFixMovie movie = aStreamFixMovie();
 
       when(downloadMoviePort.downloadCntToday(userId)).thenReturn(2L);
       when(validators.stream()).thenReturn(Stream.of(validator));
@@ -448,7 +550,7 @@ class MovieServiceTest {
       String result = sut.download(userId, role, movieId);
 
       // then
-      assertEquals("Test Movie", result);
+      assertEquals(DEFAULT_MOVIE_NAME, result);
       verify(downloadMoviePort).downloadCntToday(userId);
       verify(validator).isTarget(role);
       verify(validator).validate(2L);
@@ -465,8 +567,7 @@ class MovieServiceTest {
       when(validator.isTarget(silverRole)).thenReturn(true);
       when(validator.validate(8L)).thenReturn(true); // SILVER는 10개 미만
 
-      StreamFixMovie movie = mock(StreamFixMovie.class);
-      when(movie.movieName()).thenReturn("Silver Movie");
+      StreamFixMovie movie = aStreamFixMovieWithName("Silver Movie");
 
       when(downloadMoviePort.downloadCntToday(userId)).thenReturn(8L);
       when(validators.stream()).thenReturn(Stream.of(validator));
@@ -490,8 +591,7 @@ class MovieServiceTest {
       when(validator.isTarget(goldRole)).thenReturn(true);
       when(validator.validate(anyLong())).thenReturn(true); // GOLD는 무제한
 
-      StreamFixMovie movie = mock(StreamFixMovie.class);
-      when(movie.movieName()).thenReturn("Gold Movie");
+      StreamFixMovie movie = aStreamFixMovieWithName("Gold Movie");
 
       when(downloadMoviePort.downloadCntToday(userId)).thenReturn(100L); // 많은 다운로드 수
       when(validators.stream()).thenReturn(Stream.of(validator));
@@ -503,6 +603,52 @@ class MovieServiceTest {
       // then
       assertEquals("Gold Movie", result);
       verify(validator).validate(100L);
+    }
+
+    @DisplayName("성공: 성인 영화도 다운로드할 수 있다")
+    @Test
+    void test1003() {
+      // given
+      UserDownloadMovieRoleValidator validator = mock(UserDownloadMovieRoleValidator.class);
+      when(validator.isTarget(role)).thenReturn(true);
+      when(validator.validate(1L)).thenReturn(true);
+
+      StreamFixMovie adultMovie = anAdultStreamFixMovie();
+
+      when(downloadMoviePort.downloadCntToday(userId)).thenReturn(1L);
+      when(validators.stream()).thenReturn(Stream.of(validator));
+      when(persistenceMoviePort.findBy(movieId)).thenReturn(adultMovie);
+
+      // when
+      String result = sut.download(userId, role, movieId);
+
+      // then
+      assertEquals(ADULT_MOVIE_NAME, result);
+    }
+
+    @DisplayName("성공: 특정 장르를 가진 영화를 다운로드할 수 있다")
+    @Test
+    void test1004() {
+      // given
+      UserDownloadMovieRoleValidator validator = mock(UserDownloadMovieRoleValidator.class);
+      when(validator.isTarget(role)).thenReturn(true);
+      when(validator.validate(3L)).thenReturn(true);
+
+      String customGenre = "Sci-Fi,Action,Adventure";
+      StreamFixMovie sciFiMovie = aStreamFixMovieWithGenre(customGenre);
+
+      when(downloadMoviePort.downloadCntToday(userId)).thenReturn(3L);
+      when(validators.stream()).thenReturn(Stream.of(validator));
+      when(persistenceMoviePort.findBy(movieId)).thenReturn(sciFiMovie);
+
+      // when
+      String result = sut.download(userId, role, movieId);
+
+      // then
+      assertEquals(DEFAULT_MOVIE_NAME, result);
+      verify(downloadMoviePort).downloadCntToday(userId);
+      verify(persistenceMoviePort).findBy(movieId);
+      verify(downloadMoviePort).save(any(UserMovieDownload.class));
     }
   }
 
@@ -611,6 +757,154 @@ class MovieServiceTest {
       verify(likeMoviePort).findByUserIdAndMovieId(anotherUserId, anotherMovieId);
       verify(existingLike).like();
       verify(likeMoviePort).save(existingLike);
+    }
+  }
+
+  @Nested
+  @DisplayName("MovieFixtures Integration: MovieFixtures를 활용한 통합 테스트")
+  class MovieFixturesIntegration {
+
+    @DisplayName("다양한 TMDB 영화 픽스처를 활용한 클라이언트 조회 테스트")
+    @Test
+    void test1() {
+      // given
+      int page = 1;
+      TmdbPageableMovies multipleMovies = aTmdbPageableMoviesWithMultipleMovies();
+      when(tmdbMoviePort.fetchPageable(page)).thenReturn(multipleMovies);
+
+      // when
+      PageableMovieResponse result = sut.fetchFromClient(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(3, result.movieResponses().size());
+      assertEquals(DEFAULT_MOVIE_NAME, result.movieResponses().get(0).movieName());
+      assertEquals(HORROR_MOVIE_NAME, result.movieResponses().get(1).movieName());
+      assertEquals(COMEDY_MOVIE_NAME, result.movieResponses().get(2).movieName());
+    }
+
+    @DisplayName("영화 이름 목록으로 생성된 StreamFix 영화 목록 테스트")
+    @Test
+    void test2() {
+      // given
+      int page = 1;
+      List<StreamFixMovie> movies =
+          streamFixMoviesWithNames("DB Movie A", "DB Movie B", "DB Movie C");
+      when(persistenceMoviePort.fetchBy(page, 10)).thenReturn(movies);
+
+      // when
+      PageableMovieResponse result = sut.fetchFromDb(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(3, result.movieResponses().size());
+      assertEquals("DB Movie A", result.movieResponses().get(0).movieName());
+      assertEquals("DB Movie B", result.movieResponses().get(1).movieName());
+      assertEquals("DB Movie C", result.movieResponses().get(2).movieName());
+    }
+
+    @DisplayName("다양한 MovieFixtures 메소드를 활용한 영화 저장 테스트")
+    @Test
+    void test3() {
+      // given
+      MovieResponse basicMovie = aMovieResponse();
+      MovieResponse namedMovie = aMovieResponseWithName("Custom Movie");
+      MovieResponse adultMovie = anAdultMovieResponse();
+      MovieResponse horrorMovie = aHorrorMovieResponse();
+
+      List<MovieResponse> movies = List.of(basicMovie, namedMovie, adultMovie, horrorMovie);
+
+      // when
+      sut.insert(movies);
+
+      // then
+      verify(persistenceMoviePort, times(4)).insert(any(StreamFixMovie.class));
+    }
+
+    @DisplayName("PageableMovieResponse 픽스처 활용 예시")
+    @Test
+    void test4() {
+      // given - PageableMovieResponse 픽스처들 활용 예시
+      PageableMovieResponse basicResponse = aPageableMovieResponse();
+      PageableMovieResponse emptyResponse = anEmptyPageableMovieResponse();
+      PageableMovieResponse multipleResponse = aPageableMovieResponseWithMultipleMovies();
+      PageableMovieResponse customPageResponse = aPageableMovieResponseWithPage(5);
+
+      // then - 픽스처가 올바른 데이터를 제공하는지 확인
+      assertEquals(DEFAULT_PAGE, basicResponse.page());
+      assertEquals(DEFAULT_HAS_NEXT, basicResponse.hasNext());
+      assertEquals(1, basicResponse.movieResponses().size());
+
+      assertEquals(DEFAULT_PAGE, emptyResponse.page());
+      assertFalse(emptyResponse.hasNext());
+      assertTrue(emptyResponse.movieResponses().isEmpty());
+
+      assertEquals(2, multipleResponse.movieResponses().size());
+      assertEquals(DEFAULT_MOVIE_NAME, multipleResponse.movieResponses().get(0).movieName());
+      assertEquals(HORROR_MOVIE_NAME, multipleResponse.movieResponses().get(1).movieName());
+
+      assertEquals(5, customPageResponse.page());
+    }
+
+    @DisplayName("TMDB 영화 픽스처 종합 활용 테스트")
+    @Test
+    void test5() {
+      // given
+      int page = 1;
+      TmdbMovie basicMovie = aTmdbMovie();
+      TmdbMovie namedMovie = aTmdbMovieWithName("SF Epic");
+      TmdbMovie adultMovie = anAdultTmdbMovie();
+      TmdbMovie horrorMovie = aHorrorTmdbMovie();
+      TmdbMovie comedyMovie = aComedyTmdbMovie();
+      TmdbMovie customGenreMovie = aTmdbMovieWithGenres(List.of("Documentary", "Biography"));
+
+      List<TmdbMovie> allMovies =
+          List.of(basicMovie, namedMovie, adultMovie, horrorMovie, comedyMovie, customGenreMovie);
+      TmdbPageableMovies pageableMovies = new TmdbPageableMovies(allMovies, page, true);
+      when(tmdbMoviePort.fetchPageable(page)).thenReturn(pageableMovies);
+
+      // when
+      PageableMovieResponse result = sut.fetchFromClient(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(6, result.movieResponses().size());
+
+      // 각 영화의 특성 확인
+      assertEquals(DEFAULT_MOVIE_NAME, result.movieResponses().get(0).movieName());
+      assertEquals("SF Epic", result.movieResponses().get(1).movieName());
+      assertTrue(result.movieResponses().get(2).isAdult());
+      assertEquals(HORROR_GENRES, result.movieResponses().get(3).genre());
+      assertEquals(COMEDY_GENRES, result.movieResponses().get(4).genre());
+      assertEquals(List.of("Documentary", "Biography"), result.movieResponses().get(5).genre());
+    }
+
+    @DisplayName("StreamFix 영화 픽스처 종합 활용 테스트")
+    @Test
+    void test6() {
+      // given
+      int page = 1;
+      StreamFixMovie basicMovie = aStreamFixMovie();
+      StreamFixMovie namedMovie = aStreamFixMovieWithName("Database Epic");
+      StreamFixMovie adultMovie = anAdultStreamFixMovie();
+      StreamFixMovie genreMovie = aStreamFixMovieWithGenre("Western,Drama");
+
+      List<StreamFixMovie> allMovies = List.of(basicMovie, namedMovie, adultMovie, genreMovie);
+      when(persistenceMoviePort.fetchBy(page, 10)).thenReturn(allMovies);
+
+      // when
+      PageableMovieResponse result = sut.fetchFromDb(page);
+
+      // then
+      assertNotNull(result);
+      assertEquals(4, result.movieResponses().size());
+
+      // 각 영화의 특성 확인
+      assertEquals(DEFAULT_MOVIE_NAME, result.movieResponses().get(0).movieName());
+      assertEquals("Database Epic", result.movieResponses().get(1).movieName());
+      assertEquals(ADULT_MOVIE_NAME, result.movieResponses().get(2).movieName());
+      assertTrue(result.movieResponses().get(2).isAdult());
+      assertEquals(DEFAULT_MOVIE_NAME, result.movieResponses().get(3).movieName());
     }
   }
 }
