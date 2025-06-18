@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import com.shokoku.streamfix.exception.UserException;
+import com.shokoku.streamfix.fixtures.UserFixtures;
 import com.shokoku.streamfix.user.command.UserRegisterCommand;
 import com.shokoku.streamfix.user.response.UserRegisterResponse;
 import com.shokoku.streamfix.user.response.UserResponse;
@@ -33,6 +34,7 @@ class UserServiceTest {
   @Nested
   @DisplayName("fetchUserByEmail: 이메일로 사용자 조회")
   class FetchUserByEmail {
+
     final String existingEmail = "test@example.com";
     final String nonExistingEmail = "notfound@example.com";
 
@@ -76,16 +78,7 @@ class UserServiceTest {
     @Test
     void test1000() {
       // given
-      UserPortResponse mockPortResponse =
-          new UserPortResponse(
-              "user123",
-              "testUser",
-              "password",
-              existingEmail,
-              "010-1234-5678",
-              null,
-              null,
-              "USER");
+      UserPortResponse mockPortResponse = UserFixtures.aUserWithEmail(existingEmail);
       when(fetchUserPort.findByEmail(existingEmail)).thenReturn(Optional.of(mockPortResponse));
 
       // when
@@ -93,11 +86,11 @@ class UserServiceTest {
 
       // then
       assertNotNull(result);
-      assertEquals("user123", result.userId());
+      assertEquals(UserFixtures.DEFAULT_USER_ID, result.userId());
       assertEquals(existingEmail, result.email());
-      assertEquals("password", result.password());
-      assertEquals("testUser", result.username());
-      assertEquals("USER", result.role());
+      assertEquals(UserFixtures.DEFAULT_PASSWORD, result.password());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
+      assertEquals(UserFixtures.DEFAULT_ROLE, result.role());
       verify(fetchUserPort).findByEmail(existingEmail);
     }
 
@@ -106,8 +99,14 @@ class UserServiceTest {
     void test1001() {
       // given
       UserPortResponse mockPortResponse =
-          new UserPortResponse(
-              "user456", "testUser2", null, existingEmail, null, null, null, "ADMIN");
+          UserFixtures.aUserBuilder()
+              .userId("user456")
+              .username("testUser2")
+              .password(null)
+              .email(existingEmail)
+              .phone(null)
+              .role("ADMIN")
+              .build();
       when(fetchUserPort.findByEmail(existingEmail)).thenReturn(Optional.of(mockPortResponse));
 
       // when
@@ -126,6 +125,7 @@ class UserServiceTest {
   @Nested
   @DisplayName("findByProviderId: ProviderId로 사용자 조회")
   class FindByProviderId {
+
     final String providerId = "kakao123";
     final String nonExistingProviderId = "nonexistent456";
 
@@ -172,9 +172,7 @@ class UserServiceTest {
     @Test
     void test1000() {
       // given
-      UserPortResponse mockPortResponse =
-          new UserPortResponse(
-              "user123", "testUser", null, null, null, "KAKAO", providerId, "USER");
+      UserPortResponse mockPortResponse = UserFixtures.aKakaoUserWithProviderId(providerId);
       when(fetchUserPort.findByProviderId(providerId)).thenReturn(Optional.of(mockPortResponse));
 
       // when
@@ -182,11 +180,11 @@ class UserServiceTest {
 
       // then
       assertNotNull(result);
-      assertEquals("user123", result.userId());
+      assertEquals(UserFixtures.DEFAULT_USER_ID, result.userId());
       assertEquals(providerId, result.providerId());
-      assertEquals("KAKAO", result.provider());
-      assertEquals("testUser", result.username());
-      assertEquals("USER", result.role());
+      assertEquals(UserFixtures.KAKAO_PROVIDER, result.provider());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
+      assertEquals(UserFixtures.DEFAULT_ROLE, result.role());
       verify(fetchUserPort).findByProviderId(providerId);
     }
 
@@ -197,8 +195,16 @@ class UserServiceTest {
       // given
       String testProviderId = provider.toLowerCase() + "123";
       UserPortResponse mockPortResponse =
-          new UserPortResponse(
-              "user789", "socialUser", null, null, null, provider, testProviderId, "USER");
+          UserFixtures.aUserBuilder()
+              .userId("user789")
+              .username("socialUser")
+              .password(null)
+              .email(null)
+              .phone(null)
+              .provider(provider)
+              .providerId(testProviderId)
+              .role(UserFixtures.DEFAULT_ROLE)
+              .build();
       when(fetchUserPort.findByProviderId(testProviderId))
           .thenReturn(Optional.of(mockPortResponse));
 
@@ -215,10 +221,8 @@ class UserServiceTest {
   @Nested
   @DisplayName("register: 사용자 회원가입")
   class Register {
+
     final String email = "test@example.com";
-    final String username = "testUser";
-    final String password = "encryptedPassword";
-    final String phone = "010-1234-5678";
 
     @DisplayName("실패: 커맨드가 null이면 NullPointerException을 던진다")
     @Test
@@ -231,10 +235,8 @@ class UserServiceTest {
     @Test
     void test2() {
       // given
-      UserRegisterCommand command = new UserRegisterCommand(username, password, email, phone);
-      UserPortResponse existingUser =
-          new UserPortResponse(
-              "existingUser", username, password, email, phone, null, null, "USER");
+      UserRegisterCommand command = UserFixtures.aUserRegisterCommandWithEmail(email);
+      UserPortResponse existingUser = UserFixtures.aUserWithEmail(email);
       when(fetchUserPort.findByEmail(email)).thenReturn(Optional.of(existingUser));
 
       // when & then
@@ -247,7 +249,7 @@ class UserServiceTest {
     @Test
     void test3() {
       // given
-      UserRegisterCommand command = new UserRegisterCommand(username, password, email, phone);
+      UserRegisterCommand command = UserFixtures.aUserRegisterCommandWithEmail(email);
       when(fetchUserPort.findByEmail(email)).thenReturn(Optional.empty());
       when(insertUserPort.create(any(CreateUser.class)))
           .thenThrow(new RuntimeException("Database insertion failed"));
@@ -262,11 +264,11 @@ class UserServiceTest {
     @Test
     void test1000() {
       // given
-      UserRegisterCommand command = new UserRegisterCommand(username, password, email, phone);
+      UserRegisterCommand command = UserFixtures.aUserRegisterCommandWithEmail(email);
       when(fetchUserPort.findByEmail(email)).thenReturn(Optional.empty());
 
       UserPortResponse createdUser =
-          new UserPortResponse("newUser123", username, password, email, phone, null, null, "USER");
+          UserFixtures.aUserBuilder().userId("newUser123").email(email).build();
       when(insertUserPort.create(any(CreateUser.class))).thenReturn(createdUser);
 
       // when
@@ -274,9 +276,9 @@ class UserServiceTest {
 
       // then
       assertNotNull(result);
-      assertEquals(username, result.username());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
       assertEquals(email, result.email());
-      assertEquals(phone, result.phone());
+      assertEquals(UserFixtures.DEFAULT_PHONE, result.phone());
       verify(fetchUserPort).findByEmail(email);
       verify(insertUserPort).create(any(CreateUser.class));
     }
@@ -285,11 +287,17 @@ class UserServiceTest {
     @Test
     void test1001() {
       // given
-      UserRegisterCommand command = new UserRegisterCommand(username, password, email, null);
+      UserRegisterCommand command =
+          UserRegisterCommand.builder()
+              .username(UserFixtures.DEFAULT_USERNAME)
+              .encryptedPassword(UserFixtures.DEFAULT_PASSWORD)
+              .email(email)
+              .phone(null)
+              .build();
       when(fetchUserPort.findByEmail(email)).thenReturn(Optional.empty());
 
       UserPortResponse createdUser =
-          new UserPortResponse("newUser456", username, password, email, null, null, null, "USER");
+          UserFixtures.aUserBuilder().userId("newUser456").email(email).phone(null).build();
       when(insertUserPort.create(any(CreateUser.class))).thenReturn(createdUser);
 
       // when
@@ -297,7 +305,7 @@ class UserServiceTest {
 
       // then
       assertNotNull(result);
-      assertEquals(username, result.username());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
       assertEquals(email, result.email());
       assertNull(result.phone());
     }
@@ -307,11 +315,11 @@ class UserServiceTest {
     @ValueSource(strings = {"USER", "ADMIN", "MODERATOR"})
     void test1002(String role) {
       // given
-      UserRegisterCommand command = new UserRegisterCommand(username, password, email, phone);
+      UserRegisterCommand command = UserFixtures.aUserRegisterCommandWithEmail(email);
       when(fetchUserPort.findByEmail(email)).thenReturn(Optional.empty());
 
       UserPortResponse createdUser =
-          new UserPortResponse("roleUser123", username, password, email, phone, null, null, role);
+          UserFixtures.aUserBuilder().userId("roleUser123").email(email).role(role).build();
       when(insertUserPort.create(any(CreateUser.class))).thenReturn(createdUser);
 
       // when
@@ -319,7 +327,7 @@ class UserServiceTest {
 
       // then
       assertNotNull(result);
-      assertEquals(username, result.username());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
       assertEquals(email, result.email());
     }
   }
@@ -327,9 +335,10 @@ class UserServiceTest {
   @Nested
   @DisplayName("registerSocialUser: 소셜 사용자 회원가입")
   class RegisterSocialUser {
+
     final String username = "socialUser";
-    final String provider = "KAKAO";
-    final String providerId = "kakao123";
+    final String provider = UserFixtures.KAKAO_PROVIDER;
+    final String providerId = UserFixtures.DEFAULT_KAKAO_PROVIDER_ID;
 
     @DisplayName("실패: username이 null이거나 빈 값이면 적절히 처리한다")
     @ParameterizedTest
@@ -394,8 +403,7 @@ class UserServiceTest {
     void test1000() {
       // given
       UserPortResponse existingUser =
-          new UserPortResponse(
-              "existingUser", username, null, null, null, provider, providerId, "USER");
+          UserFixtures.aKakaoUserBuilder().userId("existingUser").username(username).build();
       when(fetchUserPort.findByProviderId(providerId)).thenReturn(Optional.of(existingUser));
 
       // when
@@ -414,8 +422,7 @@ class UserServiceTest {
       when(fetchUserPort.findByProviderId(providerId)).thenReturn(Optional.empty());
 
       UserPortResponse createdSocialUser =
-          new UserPortResponse(
-              "socialUser123", username, null, null, null, provider, providerId, "USER");
+          UserFixtures.aKakaoUserBuilder().userId("socialUser123").username(username).build();
       when(insertUserPort.createSocialUser(username, provider, providerId))
           .thenReturn(createdSocialUser);
 
@@ -440,8 +447,16 @@ class UserServiceTest {
       when(fetchUserPort.findByProviderId(testProviderId)).thenReturn(Optional.empty());
 
       UserPortResponse createdSocialUser =
-          new UserPortResponse(
-              "socialUser456", username, null, null, null, socialProvider, testProviderId, "USER");
+          UserFixtures.aUserBuilder()
+              .userId("socialUser456")
+              .username(username)
+              .password(null)
+              .email(null)
+              .phone(null)
+              .provider(socialProvider)
+              .providerId(testProviderId)
+              .role(UserFixtures.DEFAULT_ROLE)
+              .build();
       when(insertUserPort.createSocialUser(username, socialProvider, testProviderId))
           .thenReturn(createdSocialUser);
 
@@ -459,6 +474,7 @@ class UserServiceTest {
   @Nested
   @DisplayName("findKakaoUser: 카카오 사용자 조회")
   class FindKakaoUser {
+
     final String accessToken = "kakaoAccessToken";
 
     @DisplayName("실패: accessToken이 null이거나 빈 값이면 적절히 처리한다")
@@ -502,7 +518,12 @@ class UserServiceTest {
     void test1000() {
       // given
       UserPortResponse kakaoUserResponse =
-          new UserPortResponse(null, "kakaoUser", null, null, null, "KAKAO", "kakao123", null);
+          UserFixtures.aKakaoUserBuilder()
+              .userId(null)
+              .username("kakaoUser")
+              .providerId("kakao123")
+              .role(null)
+              .build();
       when(kakaoUserPort.findUserFromKakao(accessToken)).thenReturn(kakaoUserResponse);
 
       // when
@@ -510,7 +531,7 @@ class UserServiceTest {
 
       // then
       assertNotNull(result);
-      assertEquals("KAKAO", result.provider());
+      assertEquals(UserFixtures.KAKAO_PROVIDER, result.provider());
       assertEquals("kakao123", result.providerId());
       assertEquals("kakaoUser", result.username());
       verify(kakaoUserPort).findUserFromKakao(accessToken);
@@ -521,8 +542,11 @@ class UserServiceTest {
     void test1001() {
       // given
       UserPortResponse kakaoUserResponse =
-          new UserPortResponse(
-              "user789", "kakaoUser2", null, null, null, "KAKAO", "kakao456", "USER");
+          UserFixtures.aKakaoUserBuilder()
+              .userId("user789")
+              .username("kakaoUser2")
+              .providerId("kakao456")
+              .build();
       when(kakaoUserPort.findUserFromKakao(accessToken)).thenReturn(kakaoUserResponse);
 
       // when
@@ -530,7 +554,7 @@ class UserServiceTest {
 
       // then
       assertNotNull(result);
-      assertEquals("KAKAO", result.provider());
+      assertEquals(UserFixtures.KAKAO_PROVIDER, result.provider());
       assertEquals("kakao456", result.providerId());
       assertEquals("kakaoUser2", result.username());
     }
@@ -540,7 +564,12 @@ class UserServiceTest {
     void test1002() {
       // given
       UserPortResponse kakaoUserResponse =
-          new UserPortResponse(null, null, null, null, null, "KAKAO", "kakao789", null);
+          UserFixtures.aKakaoUserBuilder()
+              .userId(null)
+              .username(null)
+              .providerId("kakao789")
+              .role(null)
+              .build();
       when(kakaoUserPort.findUserFromKakao(accessToken)).thenReturn(kakaoUserResponse);
 
       // when
@@ -548,9 +577,297 @@ class UserServiceTest {
 
       // then
       assertNotNull(result);
-      assertEquals("KAKAO", result.provider());
+      assertEquals(UserFixtures.KAKAO_PROVIDER, result.provider());
       assertEquals("kakao789", result.providerId());
       assertNull(result.username());
+    }
+  }
+
+  @Nested
+  @DisplayName("UserFixtures Integration: 다양한 사용자 픽스처 활용 테스트")
+  class UserFixturesIntegration {
+
+    @DisplayName("기본 사용자 픽스처를 활용한 조회 테스트")
+    @Test
+    void test1() {
+      // given
+      UserPortResponse defaultUser = UserFixtures.aUser();
+      when(fetchUserPort.findByEmail(UserFixtures.DEFAULT_EMAIL))
+          .thenReturn(Optional.of(defaultUser));
+
+      // when
+      UserResponse result = sut.fetchUserByEmail(UserFixtures.DEFAULT_EMAIL);
+
+      // then
+      assertNotNull(result);
+      assertEquals(UserFixtures.DEFAULT_USER_ID, result.userId());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
+      assertEquals(UserFixtures.DEFAULT_EMAIL, result.email());
+      assertEquals(UserFixtures.DEFAULT_PASSWORD, result.password());
+      assertEquals(UserFixtures.DEFAULT_ROLE, result.role());
+      // fetchUserByEmail 메서드는 provider, providerId, phone 필드를 설정하지 않음
+      assertNull(result.provider());
+      assertNull(result.providerId());
+      assertNull(result.phone());
+    }
+
+    @DisplayName("특정 ID를 가진 사용자 픽스처 테스트")
+    @Test
+    void test2() {
+      // given
+      String customUserId = "customUser456";
+      UserPortResponse userWithId = UserFixtures.aUserWithId(customUserId);
+      when(fetchUserPort.findByEmail(UserFixtures.DEFAULT_EMAIL))
+          .thenReturn(Optional.of(userWithId));
+
+      // when
+      UserResponse result = sut.fetchUserByEmail(UserFixtures.DEFAULT_EMAIL);
+
+      // then
+      assertNotNull(result);
+      assertEquals(customUserId, result.userId());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
+    }
+
+    @DisplayName("특정 역할을 가진 사용자 픽스처 테스트")
+    @Test
+    void test3() {
+      // given
+      String adminRole = "ADMIN";
+      UserPortResponse adminUser = UserFixtures.aUserWithRole(adminRole);
+      when(fetchUserPort.findByEmail(UserFixtures.DEFAULT_EMAIL))
+          .thenReturn(Optional.of(adminUser));
+
+      // when
+      UserResponse result = sut.fetchUserByEmail(UserFixtures.DEFAULT_EMAIL);
+
+      // then
+      assertNotNull(result);
+      assertEquals(adminRole, result.role());
+      assertEquals(UserFixtures.DEFAULT_USER_ID, result.userId());
+    }
+
+    @DisplayName("전화번호가 없는 사용자 픽스처 테스트")
+    @Test
+    void test4() {
+      // given
+      UserPortResponse userWithoutPhone = UserFixtures.aUserWithoutPhone();
+      when(fetchUserPort.findByEmail(UserFixtures.DEFAULT_EMAIL))
+          .thenReturn(Optional.of(userWithoutPhone));
+
+      // when
+      UserResponse result = sut.fetchUserByEmail(UserFixtures.DEFAULT_EMAIL);
+
+      // then
+      assertNotNull(result);
+      assertNull(result.phone());
+      assertEquals(UserFixtures.DEFAULT_EMAIL, result.email());
+    }
+
+    @DisplayName("기본 카카오 사용자 픽스처 테스트")
+    @Test
+    void test5() {
+      // given
+      UserPortResponse kakaoUser = UserFixtures.aKakaoUser();
+      when(fetchUserPort.findByProviderId(UserFixtures.DEFAULT_KAKAO_PROVIDER_ID))
+          .thenReturn(Optional.of(kakaoUser));
+
+      // when
+      UserResponse result = sut.findByProviderId(UserFixtures.DEFAULT_KAKAO_PROVIDER_ID);
+
+      // then
+      assertNotNull(result);
+      assertEquals(UserFixtures.KAKAO_PROVIDER, result.provider());
+      assertEquals(UserFixtures.DEFAULT_KAKAO_PROVIDER_ID, result.providerId());
+      assertNull(result.password());
+      assertNull(result.email());
+      assertNull(result.phone());
+    }
+
+    @DisplayName("구글 사용자 픽스처 테스트")
+    @Test
+    void test6() {
+      // given
+      UserPortResponse googleUser = UserFixtures.aGoogleUser();
+      when(fetchUserPort.findByProviderId(UserFixtures.DEFAULT_GOOGLE_PROVIDER_ID))
+          .thenReturn(Optional.of(googleUser));
+
+      // when
+      UserResponse result = sut.findByProviderId(UserFixtures.DEFAULT_GOOGLE_PROVIDER_ID);
+
+      // then
+      assertNotNull(result);
+      assertEquals(UserFixtures.GOOGLE_PROVIDER, result.provider());
+      assertEquals(UserFixtures.DEFAULT_GOOGLE_PROVIDER_ID, result.providerId());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
+    }
+
+    @DisplayName("커스텀 소셜 사용자 픽스처 테스트")
+    @Test
+    void test7() {
+      // given
+      String customProvider = "NAVER";
+      String customProviderId = "naver123";
+      UserPortResponse socialUser = UserFixtures.aSocialUser(customProvider, customProviderId);
+      when(fetchUserPort.findByProviderId(customProviderId)).thenReturn(Optional.of(socialUser));
+
+      // when
+      UserResponse result = sut.findByProviderId(customProviderId);
+
+      // then
+      assertNotNull(result);
+      assertEquals(customProvider, result.provider());
+      assertEquals(customProviderId, result.providerId());
+    }
+  }
+
+  @Nested
+  @DisplayName("UserRegisterCommand Fixtures: 회원가입 커맨드 픽스처 테스트")
+  class UserRegisterCommandFixtures {
+
+    @DisplayName("기본 회원가입 커맨드 픽스처 테스트")
+    @Test
+    void test1() {
+      // given
+      UserRegisterCommand command = UserFixtures.aUserRegisterCommand();
+      when(fetchUserPort.findByEmail(UserFixtures.DEFAULT_EMAIL)).thenReturn(Optional.empty());
+
+      UserPortResponse createdUser = UserFixtures.aUser();
+      when(insertUserPort.create(any(CreateUser.class))).thenReturn(createdUser);
+
+      // when
+      UserRegisterResponse result = sut.register(command);
+
+      // then
+      assertNotNull(result);
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
+      assertEquals(UserFixtures.DEFAULT_EMAIL, result.email());
+      assertEquals(UserFixtures.DEFAULT_PHONE, result.phone());
+    }
+
+    @DisplayName("전화번호가 없는 회원가입 커맨드 픽스처 테스트")
+    @Test
+    void test2() {
+      // given
+      UserRegisterCommand command = UserFixtures.aUserRegisterCommandWithoutPhone();
+      when(fetchUserPort.findByEmail(UserFixtures.DEFAULT_EMAIL)).thenReturn(Optional.empty());
+
+      UserPortResponse createdUser = UserFixtures.aUserWithoutPhone();
+      when(insertUserPort.create(any(CreateUser.class))).thenReturn(createdUser);
+
+      // when
+      UserRegisterResponse result = sut.register(command);
+
+      // then
+      assertNotNull(result);
+      assertEquals(UserFixtures.DEFAULT_USERNAME, result.username());
+      assertEquals(UserFixtures.DEFAULT_EMAIL, result.email());
+      assertNull(result.phone());
+    }
+  }
+
+  @Nested
+  @DisplayName("UserResponse Fixtures: 사용자 응답 픽스처 활용 테스트")
+  class UserResponseFixtures {
+
+    @DisplayName("기본 사용자 응답 픽스처의 속성을 확인할 수 있다")
+    @Test
+    void test1() {
+      // when
+      UserResponse userResponse = UserFixtures.aUserResponse();
+
+      // then
+      assertNotNull(userResponse);
+      assertEquals(UserFixtures.DEFAULT_USER_ID, userResponse.userId());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, userResponse.username());
+      assertEquals(UserFixtures.DEFAULT_PASSWORD, userResponse.password());
+      assertEquals(UserFixtures.DEFAULT_EMAIL, userResponse.email());
+      assertEquals(UserFixtures.DEFAULT_PHONE, userResponse.phone());
+      assertEquals(UserFixtures.DEFAULT_ROLE, userResponse.role());
+      assertNull(userResponse.provider());
+      assertNull(userResponse.providerId());
+    }
+
+    @DisplayName("카카오 사용자 응답 픽스처의 속성을 확인할 수 있다")
+    @Test
+    void test2() {
+      // when
+      UserResponse kakaoUserResponse = UserFixtures.aKakaoUserResponse();
+
+      // then
+      assertNotNull(kakaoUserResponse);
+      assertEquals(UserFixtures.DEFAULT_USER_ID, kakaoUserResponse.userId());
+      assertEquals(UserFixtures.DEFAULT_USERNAME, kakaoUserResponse.username());
+      assertNull(kakaoUserResponse.password());
+      assertNull(kakaoUserResponse.email());
+      assertNull(kakaoUserResponse.phone());
+      assertEquals(UserFixtures.KAKAO_PROVIDER, kakaoUserResponse.provider());
+      assertEquals(UserFixtures.DEFAULT_KAKAO_PROVIDER_ID, kakaoUserResponse.providerId());
+      assertEquals(UserFixtures.DEFAULT_ROLE, kakaoUserResponse.role());
+    }
+
+    @DisplayName("특정 providerId를 가진 사용자 응답 픽스처를 확인할 수 있다")
+    @Test
+    void test3() {
+      // given
+      String customProviderId = "customProvider123";
+
+      // when
+      UserResponse userResponseWithProviderId =
+          UserFixtures.aUserResponseWithProviderId(customProviderId);
+
+      // then
+      assertNotNull(userResponseWithProviderId);
+      assertEquals(customProviderId, userResponseWithProviderId.providerId());
+      assertEquals(UserFixtures.DEFAULT_USER_ID, userResponseWithProviderId.userId());
+      assertEquals(UserFixtures.DEFAULT_EMAIL, userResponseWithProviderId.email());
+    }
+  }
+
+  @Nested
+  @DisplayName("UserRegisterResponse Fixtures: 회원가입 응답 픽스처 테스트")
+  class UserRegisterResponseFixtures {
+
+    @DisplayName("기본 회원가입 응답 픽스처의 속성을 확인할 수 있다")
+    @Test
+    void test1() {
+      // when
+      UserRegisterResponse response = UserFixtures.aUserRegisterResponse();
+
+      // then
+      assertNotNull(response);
+      assertEquals(UserFixtures.DEFAULT_USERNAME, response.username());
+      assertEquals(UserFixtures.DEFAULT_EMAIL, response.email());
+      assertEquals(UserFixtures.DEFAULT_PHONE, response.phone());
+    }
+
+    @DisplayName("특정 이메일을 가진 회원가입 응답 픽스처를 확인할 수 있다")
+    @Test
+    void test2() {
+      // given
+      String customEmail = "custom@example.com";
+
+      // when
+      UserRegisterResponse response = UserFixtures.aUserRegisterResponseWithEmail(customEmail);
+
+      // then
+      assertNotNull(response);
+      assertEquals(UserFixtures.DEFAULT_USERNAME, response.username());
+      assertEquals(customEmail, response.email());
+      assertEquals(UserFixtures.DEFAULT_PHONE, response.phone());
+    }
+
+    @DisplayName("전화번호가 없는 회원가입 응답 픽스처를 확인할 수 있다")
+    @Test
+    void test3() {
+      // when
+      UserRegisterResponse response = UserFixtures.aUserRegisterResponseWithoutPhone();
+
+      // then
+      assertNotNull(response);
+      assertEquals(UserFixtures.DEFAULT_USERNAME, response.username());
+      assertEquals(UserFixtures.DEFAULT_EMAIL, response.email());
+      assertNull(response.phone());
     }
   }
 }
