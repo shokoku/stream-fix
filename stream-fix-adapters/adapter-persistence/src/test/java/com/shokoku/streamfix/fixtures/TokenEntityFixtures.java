@@ -14,13 +14,30 @@ public class TokenEntityFixtures {
 
   // 기본 테스트 데이터 상수
   public static final String DEFAULT_USER_ID = "testUser123";
-  public static final String CUSTOM_USER_ID = "customUser456";
   public static final String DEFAULT_ACCESS_TOKEN = "test.access.token";
   public static final String DEFAULT_REFRESH_TOKEN = "test.refresh.token";
   public static final String NEW_ACCESS_TOKEN = "new.access.token";
   public static final String NEW_REFRESH_TOKEN = "new.refresh.token";
   public static final String UPDATED_ACCESS_TOKEN = "updated.access.token";
   public static final String UPDATED_REFRESH_TOKEN = "updated.refresh.token";
+
+  // 사용자 관련 상수
+  public static final String CUSTOM_USER_ID = "customUser456";
+  public static final String ANOTHER_USER_ID = "anotherUser789";
+  public static final String UPDATE_USER_ID = "updateUser123";
+  public static final String NON_EXISTENT_USER_ID = "nonExistentUser123";
+
+  // 토큰 관련 상수
+  public static final String CUSTOM_ACCESS_TOKEN = "custom.access.token";
+  public static final String CUSTOM_REFRESH_TOKEN = "custom.refresh.token";
+  public static final String ANOTHER_ACCESS_TOKEN = "another.access.token";
+  public static final String ANOTHER_REFRESH_TOKEN = "another.refresh.token";
+  public static final String SPECIAL_ACCESS_TOKEN = "special.access.token.for.admin";
+  public static final String LONG_LIVED_REFRESH_TOKEN = "long.lived.refresh.token";
+
+  // 예외 메시지 상수
+  public static final String DB_SAVE_ERROR_MESSAGE = "DB 저장 실패";
+  public static final String DB_QUERY_ERROR_MESSAGE = "DB 조회 실패";
 
   /** 기본 TokenEntity 생성 */
   public static TokenEntity aTokenEntity() {
@@ -32,36 +49,20 @@ public class TokenEntityFixtures {
     return TokenEntity.newTokenEntity(userId, DEFAULT_ACCESS_TOKEN, DEFAULT_REFRESH_TOKEN);
   }
 
-  /** 특정 토큰들을 가진 TokenEntity 생성 */
-  public static TokenEntity aTokenEntityWith(
-      String userId, String accessToken, String refreshToken) {
-    return TokenEntity.newTokenEntity(userId, accessToken, refreshToken);
+  /** 커스텀 사용자의 TokenEntity 생성 */
+  public static TokenEntity aCustomTokenEntity() {
+    return TokenEntity.newTokenEntity(CUSTOM_USER_ID, CUSTOM_ACCESS_TOKEN, CUSTOM_REFRESH_TOKEN);
   }
 
-  /** 새로운 토큰으로 TokenEntity 생성 */
-  public static TokenEntity aNewTokenEntity() {
-    return TokenEntity.newTokenEntity(DEFAULT_USER_ID, NEW_ACCESS_TOKEN, NEW_REFRESH_TOKEN);
-  }
-
-  /** 업데이트된 토큰으로 TokenEntity 생성 */
-  public static TokenEntity anUpdatedTokenEntity() {
-    return TokenEntity.newTokenEntity(DEFAULT_USER_ID, UPDATED_ACCESS_TOKEN, UPDATED_REFRESH_TOKEN);
-  }
-
-  /** 특정 만료 시간을 가진 TokenEntity 생성 */
-  public static TokenEntity aTokenEntityWithExpiry(
-      String userId,
-      String accessToken,
-      String refreshToken,
-      LocalDateTime accessExpiry,
-      LocalDateTime refreshExpiry) {
-    return new TokenEntity(userId, accessToken, refreshToken, accessExpiry, refreshExpiry);
+  /** 다른 사용자의 TokenEntity 생성 */
+  public static TokenEntity anotherTokenEntity() {
+    return TokenEntity.newTokenEntity(ANOTHER_USER_ID, ANOTHER_ACCESS_TOKEN, ANOTHER_REFRESH_TOKEN);
   }
 
   /** 만료된 TokenEntity 생성 */
   public static TokenEntity anExpiredTokenEntity() {
     LocalDateTime pastTime = LocalDateTime.now().minusHours(1);
-    return aTokenEntityWithExpiry(
+    return new TokenEntity(
         DEFAULT_USER_ID, DEFAULT_ACCESS_TOKEN, DEFAULT_REFRESH_TOKEN, pastTime, pastTime);
   }
 
@@ -80,53 +81,33 @@ public class TokenEntityFixtures {
     return new TokenPortResponse(DEFAULT_ACCESS_TOKEN, refreshToken);
   }
 
-  /** 커스텀 토큰들을 가진 TokenPortResponse 생성 */
-  public static TokenPortResponse aTokenPortResponseWith(String accessToken, String refreshToken) {
-    return new TokenPortResponse(accessToken, refreshToken);
+  /** 커스텀 TokenPortResponse 생성 */
+  public static TokenPortResponse aCustomTokenPortResponse() {
+    return new TokenPortResponse(CUSTOM_ACCESS_TOKEN, CUSTOM_REFRESH_TOKEN);
   }
 
-  /** 새로운 토큰으로 TokenPortResponse 생성 */
-  public static TokenPortResponse aNewTokenPortResponse() {
-    return new TokenPortResponse(NEW_ACCESS_TOKEN, NEW_REFRESH_TOKEN);
+  /** 특별한 액세스 토큰 TokenPortResponse 생성 */
+  public static TokenPortResponse aSpecialTokenPortResponse() {
+    return new TokenPortResponse(SPECIAL_ACCESS_TOKEN, DEFAULT_REFRESH_TOKEN);
   }
 
-  /** 업데이트된 토큰으로 TokenPortResponse 생성 */
-  public static TokenPortResponse anUpdatedTokenPortResponse() {
-    return new TokenPortResponse(UPDATED_ACCESS_TOKEN, UPDATED_REFRESH_TOKEN);
-  }
-
-  /** null 사용자 ID 반환 */
-  public static String aNullUserId() {
-    return null;
-  }
-
-  /** 빈 사용자 ID 반환 */
-  public static String anEmptyUserId() {
-    return "";
+  /** 장기간 리프레시 토큰 TokenPortResponse 생성 */
+  public static TokenPortResponse aLongLivedTokenPortResponse() {
+    return new TokenPortResponse(DEFAULT_ACCESS_TOKEN, LONG_LIVED_REFRESH_TOKEN);
   }
 
   /** 존재하지 않는 사용자 ID 반환 */
   public static String aNonExistentUserId() {
-    return "nonExistentUser123";
+    return NON_EXISTENT_USER_ID;
   }
 
-  /** null 액세스 토큰 반환 */
-  public static String aNullAccessToken() {
-    return null;
+  /** DB 저장 실패 메시지 반환 */
+  public static String aDbSaveErrorMessage() {
+    return DB_SAVE_ERROR_MESSAGE;
   }
 
-  /** 빈 액세스 토큰 반환 */
-  public static String anEmptyAccessToken() {
-    return "";
-  }
-
-  /** null 리프레시 토큰 반환 */
-  public static String aNullRefreshToken() {
-    return null;
-  }
-
-  /** 빈 리프레시 토큰 반환 */
-  public static String anEmptyRefreshToken() {
-    return "";
+  /** DB 조회 실패 메시지 반환 */
+  public static String aDbQueryErrorMessage() {
+    return DB_QUERY_ERROR_MESSAGE;
   }
 }

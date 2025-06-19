@@ -33,7 +33,7 @@ class TokenRepositoryTest {
     void test1() {
       // given
       when(tokenJpaRepository.save(any(TokenEntity.class)))
-          .thenThrow(new RuntimeException("DB 저장 실패"));
+          .thenThrow(new RuntimeException(aDbSaveErrorMessage()));
 
       // when & then
       assertThrows(
@@ -128,7 +128,7 @@ class TokenRepositoryTest {
     void test1() {
       // given
       when(tokenJpaRepository.findByUserId(DEFAULT_USER_ID))
-          .thenThrow(new RuntimeException("DB 조회 실패"));
+          .thenThrow(new RuntimeException(aDbQueryErrorMessage()));
 
       // when & then
       assertThrows(RuntimeException.class, () -> sut.findByUserId(DEFAULT_USER_ID));
@@ -170,22 +170,18 @@ class TokenRepositoryTest {
     @Test
     void test1002() {
       // given
-      String customUserId = "anotherUser789";
-      String customAccessToken = "another.access.token";
-      String customRefreshToken = "another.refresh.token";
-      TokenEntity customTokenEntity =
-          aTokenEntityWith(customUserId, customAccessToken, customRefreshToken);
-      when(tokenJpaRepository.findByUserId(customUserId))
+      TokenEntity customTokenEntity = anotherTokenEntity();
+      when(tokenJpaRepository.findByUserId(ANOTHER_USER_ID))
           .thenReturn(Optional.of(customTokenEntity));
 
       // when
-      TokenPortResponse result = sut.findByUserId(customUserId);
+      TokenPortResponse result = sut.findByUserId(ANOTHER_USER_ID);
 
       // then
       assertNotNull(result);
-      assertEquals(customAccessToken, result.accessToken());
-      assertEquals(customRefreshToken, result.refreshToken());
-      verify(tokenJpaRepository).findByUserId(customUserId);
+      assertEquals(ANOTHER_ACCESS_TOKEN, result.accessToken());
+      assertEquals(ANOTHER_REFRESH_TOKEN, result.refreshToken());
+      verify(tokenJpaRepository).findByUserId(ANOTHER_USER_ID);
     }
   }
 
@@ -214,7 +210,8 @@ class TokenRepositoryTest {
     @Test
     void test2() {
       // given
-      when(tokenJpaRepository.findByUserId(userId)).thenThrow(new RuntimeException("DB 조회 실패"));
+      when(tokenJpaRepository.findByUserId(userId))
+          .thenThrow(new RuntimeException(aDbQueryErrorMessage()));
 
       // when & then
       assertThrows(
@@ -229,7 +226,7 @@ class TokenRepositoryTest {
       TokenEntity tokenEntity = aTokenEntity();
       when(tokenJpaRepository.findByUserId(userId)).thenReturn(Optional.of(tokenEntity));
       when(tokenJpaRepository.save(any(TokenEntity.class)))
-          .thenThrow(new RuntimeException("DB 저장 실패"));
+          .thenThrow(new RuntimeException(aDbSaveErrorMessage()));
 
       // when & then
       assertThrows(
@@ -309,18 +306,17 @@ class TokenRepositoryTest {
     @Test
     void test1003() {
       // given
-      String customUserId = "updateUser123";
-      TokenEntity customTokenEntity = aTokenEntityWithUserId(customUserId);
-      when(tokenJpaRepository.findByUserId(customUserId))
+      TokenEntity customTokenEntity = aTokenEntityWithUserId(UPDATE_USER_ID);
+      when(tokenJpaRepository.findByUserId(UPDATE_USER_ID))
           .thenReturn(Optional.of(customTokenEntity));
 
       // when
-      sut.updateToken(customUserId, NEW_ACCESS_TOKEN, NEW_REFRESH_TOKEN);
+      sut.updateToken(UPDATE_USER_ID, NEW_ACCESS_TOKEN, NEW_REFRESH_TOKEN);
 
       // then
       assertEquals(NEW_ACCESS_TOKEN, customTokenEntity.getAccessToken());
       assertEquals(NEW_REFRESH_TOKEN, customTokenEntity.getRefreshToken());
-      verify(tokenJpaRepository).findByUserId(customUserId);
+      verify(tokenJpaRepository).findByUserId(UPDATE_USER_ID);
       verify(tokenJpaRepository).save(customTokenEntity);
     }
   }
@@ -413,44 +409,56 @@ class TokenRepositoryTest {
     @DisplayName("특정 액세스 토큰을 가진 응답을 생성할 수 있다")
     @Test
     void test2() {
-      // given
-      String customAccessToken = "customAccessToken123";
-
       // when
-      TokenPortResponse response = aTokenPortResponseWithAccessToken(customAccessToken);
+      TokenPortResponse response = aTokenPortResponseWithAccessToken(CUSTOM_ACCESS_TOKEN);
 
       // then
-      assertEquals(customAccessToken, response.accessToken());
+      assertEquals(CUSTOM_ACCESS_TOKEN, response.accessToken());
       assertEquals(DEFAULT_REFRESH_TOKEN, response.refreshToken());
     }
 
     @DisplayName("특정 리프레시 토큰을 가진 응답을 생성할 수 있다")
     @Test
     void test3() {
-      // given
-      String customRefreshToken = "customRefreshToken456";
-
       // when
-      TokenPortResponse response = aTokenPortResponseWithRefreshToken(customRefreshToken);
+      TokenPortResponse response = aTokenPortResponseWithRefreshToken(CUSTOM_REFRESH_TOKEN);
 
       // then
       assertEquals(DEFAULT_ACCESS_TOKEN, response.accessToken());
-      assertEquals(customRefreshToken, response.refreshToken());
+      assertEquals(CUSTOM_REFRESH_TOKEN, response.refreshToken());
     }
 
     @DisplayName("커스텀 토큰들을 가진 응답을 생성할 수 있다")
     @Test
     void test4() {
-      // given
-      String customAccessToken = "custom.access.token";
-      String customRefreshToken = "custom.refresh.token";
-
       // when
-      TokenPortResponse response = aTokenPortResponseWith(customAccessToken, customRefreshToken);
+      TokenPortResponse response = aCustomTokenPortResponse();
 
       // then
-      assertEquals(customAccessToken, response.accessToken());
-      assertEquals(customRefreshToken, response.refreshToken());
+      assertEquals(CUSTOM_ACCESS_TOKEN, response.accessToken());
+      assertEquals(CUSTOM_REFRESH_TOKEN, response.refreshToken());
+    }
+
+    @DisplayName("특정 액세스 토큰만 다른 응답을 생성할 수 있다")
+    @Test
+    void test5() {
+      // when
+      TokenPortResponse response = aSpecialTokenPortResponse();
+
+      // then
+      assertEquals(SPECIAL_ACCESS_TOKEN, response.accessToken());
+      assertEquals(DEFAULT_REFRESH_TOKEN, response.refreshToken());
+    }
+
+    @DisplayName("특정 리프레시 토큰만 다른 응답을 생성할 수 있다")
+    @Test
+    void test6() {
+      // when
+      TokenPortResponse response = aLongLivedTokenPortResponse();
+
+      // then
+      assertEquals(DEFAULT_ACCESS_TOKEN, response.accessToken());
+      assertEquals(LONG_LIVED_REFRESH_TOKEN, response.refreshToken());
     }
   }
 
@@ -476,14 +484,11 @@ class TokenRepositoryTest {
     @DisplayName("특정 사용자 ID를 가진 토큰 엔티티를 생성할 수 있다")
     @Test
     void test2() {
-      // given
-      String customUserId = "customUser456";
-
       // when
-      TokenEntity entity = aTokenEntityWithUserId(customUserId);
+      TokenEntity entity = aTokenEntityWithUserId(CUSTOM_USER_ID);
 
       // then
-      assertEquals(customUserId, entity.getUserId());
+      assertEquals(CUSTOM_USER_ID, entity.getUserId());
       assertEquals(DEFAULT_ACCESS_TOKEN, entity.getAccessToken());
       assertEquals(DEFAULT_REFRESH_TOKEN, entity.getRefreshToken());
     }
@@ -491,18 +496,13 @@ class TokenRepositoryTest {
     @DisplayName("커스텀 파라미터로 토큰 엔티티를 생성할 수 있다")
     @Test
     void test3() {
-      // given
-      String customUserId = "customUser789";
-      String customAccessToken = "custom.access.token";
-      String customRefreshToken = "custom.refresh.token";
-
       // when
-      TokenEntity entity = aTokenEntityWith(customUserId, customAccessToken, customRefreshToken);
+      TokenEntity entity = aCustomTokenEntity();
 
       // then
-      assertEquals(customUserId, entity.getUserId());
-      assertEquals(customAccessToken, entity.getAccessToken());
-      assertEquals(customRefreshToken, entity.getRefreshToken());
+      assertEquals(CUSTOM_USER_ID, entity.getUserId());
+      assertEquals(CUSTOM_ACCESS_TOKEN, entity.getAccessToken());
+      assertEquals(CUSTOM_REFRESH_TOKEN, entity.getRefreshToken());
     }
 
     @DisplayName("만료된 토큰 엔티티를 생성할 수 있다")
@@ -513,8 +513,35 @@ class TokenRepositoryTest {
 
       // then
       assertEquals(DEFAULT_USER_ID, entity.getUserId());
+      assertEquals(DEFAULT_ACCESS_TOKEN, entity.getAccessToken());
+      assertEquals(DEFAULT_REFRESH_TOKEN, entity.getRefreshToken());
       assertTrue(entity.getAccessTokenExpiresAt().isBefore(LocalDateTime.now()));
       assertTrue(entity.getRefreshTokenExpiresAt().isBefore(LocalDateTime.now()));
+    }
+
+    @DisplayName("존재하지 않는 사용자 ID를 제공할 수 있다")
+    @Test
+    void test5() {
+      // when
+      String nonExistentUserId = aNonExistentUserId();
+
+      // then
+      assertNotNull(nonExistentUserId);
+      assertFalse(nonExistentUserId.isEmpty());
+      assertEquals(NON_EXISTENT_USER_ID, nonExistentUserId);
+      assertTrue(nonExistentUserId.contains("nonExistent"));
+    }
+
+    @DisplayName("에러 메시지를 제공할 수 있다")
+    @Test
+    void test6() {
+      // when
+      String dbSaveError = aDbSaveErrorMessage();
+      String dbQueryError = aDbQueryErrorMessage();
+
+      // then
+      assertEquals(DB_SAVE_ERROR_MESSAGE, dbSaveError);
+      assertEquals(DB_QUERY_ERROR_MESSAGE, dbQueryError);
     }
   }
 }
