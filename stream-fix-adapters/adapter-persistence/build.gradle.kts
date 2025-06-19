@@ -21,6 +21,16 @@ dependencies {
     implementation("com.querydsl:querydsl-jpa:_:jakarta")
     implementation("com.querydsl:querydsl-core:_")
     annotationProcessor("com.querydsl:querydsl-apt:_:jakarta")
+
+    // test
+    testImplementation("com.h2database:h2")
+
+    // testcontainers
+    testImplementation(platform("org.testcontainers:testcontainers-bom:_"))
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:mysql")
+    testImplementation("org.springframework.boot:spring-boot-testcontainers")
 }
 tasks.getByName<Jar>("bootJar") {
     enabled = false
